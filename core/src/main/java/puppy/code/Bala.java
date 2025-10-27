@@ -6,42 +6,47 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class PingBall {
+public class Bala {
 	    private int x;
 	    private int y;
 	    private int size;
-	    private int xSpeed;
-	    private int ySpeed;
+	    private int velocidad;
+	    private boolean colisiono;
 	    private Color color = Color.WHITE;
-	    private boolean estaQuieto;
 	    
-	    public PingBall(int x, int y, int size, int xSpeed, int ySpeed, boolean iniciaQuieto) {
+	    public Bala(int x, int y, int size, int velocidad) {
 	        this.x = x;
 	        this.y = y;
 	        this.size = size;
-	        this.xSpeed = xSpeed;
-	        this.ySpeed = ySpeed;
-	        estaQuieto = iniciaQuieto;
+	        this.velocidad = velocidad;
+	        colisiono = false;
 	    }
 	    
-	    public boolean estaQuieto() {
-	    	return estaQuieto;
-	    }
-	    public void setEstaQuieto(boolean bb) {
-	    	estaQuieto=bb;
-	    }
+	    
 	    public void setXY(int x, int y) {
 	    	this.x = x;
 	        this.y = y;
 	    }
 	    public int getY() {return y;}
 	    
+	    public boolean getColisiono() {
+	    	return colisiono;
+	    }
+	    
+	    public void setColisiono(boolean colisiono) {
+	    	this.colisiono = colisiono;
+	    }
+	    
 	    public void draw(ShapeRenderer shape){
 	        shape.setColor(color);
 	        shape.circle(x, y, size);
 	    }
 	    
-	    public void update() {
+	    public void actualizar() {
+	    	y += velocidad;
+	    }
+	    
+	    /**public void update() {
 	    	if (estaQuieto) return;
 	        x += xSpeed;
 	        y += ySpeed;
@@ -53,7 +58,7 @@ public class PingBall {
 	        }
 	    }
 	    
-	    public void checkCollision(Paddle paddle) {
+	    public void checkCollision(Player paddle) {
 	        if(collidesWith(paddle)){
 	            color = Color.GREEN;
 	            ySpeed = -ySpeed;
@@ -62,16 +67,16 @@ public class PingBall {
 	            color = Color.WHITE;
 	        }
 	    }
-	    private boolean collidesWith(Paddle pp) {
+	    private boolean collidesWith(Player pp) {
 
 	    	boolean intersectaX = (pp.getX() + pp.getWidth() >= x-size) && (pp.getX() <= x+size);
 	        boolean intersectaY = (pp.getY() + pp.getHeight() >= y-size) && (pp.getY() <= y+size);		
 	    	return intersectaX && intersectaY;
-	    }
+	    }**/
 	    
 	    public void checkCollision(Block block) {
 	        if(collidesWith(block)){
-	            ySpeed = - ySpeed;
+	            colisiono = true;
 	            block.destroyed = true;
 	        }
 	    }

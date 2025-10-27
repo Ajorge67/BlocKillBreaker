@@ -18,9 +18,10 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private SpriteBatch batch;	   
 	private BitmapFont font;
 	private ShapeRenderer shape;
-	private PingBall ball;
-	private Paddle pad;
-	private ArrayList<Block> blocks = new ArrayList<>();
+	private Player jugador;
+	private ArrayList<Block> bloques = new ArrayList<>();
+	private ArrayList<Bala> balas = new ArrayList<>();
+	private ArrayList<Bala> balasMuertas = new ArrayList<>();
 	private int vidas;
 	private int puntaje;
 	private int nivel;
@@ -36,20 +37,19 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    crearBloques(2+nivel);
 			
 		    shape = new ShapeRenderer();
-		    ball = new PingBall(Gdx.graphics.getWidth()/2-10, 41, 10, 5, 7, true);
-		    pad = new Paddle(Gdx.graphics.getWidth()/2-50,40,100,10);
+		    jugador = new Player(Gdx.graphics.getWidth()/2-35,40,35,10,10);
 		    vidas = 3;
 		    puntaje = 0;    
 		}
 		public void crearBloques(int filas) {
-			blocks.clear();
+			bloques.clear();
 			int blockWidth = 70;
 		    int blockHeight = 26;
 		    int y = Gdx.graphics.getHeight();
 		    for (int cont = 0; cont<filas; cont++ ) {
 		    	y -= blockHeight+10;
 		    	for (int x = 5; x < Gdx.graphics.getWidth(); x += blockWidth + 10) {
-		            blocks.add(new Block(x, y, blockWidth, blockHeight));
+		            bloques.add(new Block(x, y, blockWidth, blockHeight));
 		        }
 		    }
 		}
@@ -67,11 +67,24 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		@Override
 		public void render () {
+			System.out.println(balas.size());
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
 	        shape.begin(ShapeRenderer.ShapeType.Filled);
-	        pad.draw(shape);
+	        jugador.draw(shape);
+	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
+	        for(Bala bala : balas) {
+	        	bala.actualizar();
+	        	for(Block bloque : bloques)
+	        		bala.checkCollision(bloque);
+	        	if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())balasMuertas.add(bala);
+	        	bala.draw(shape);
+	        }
+	        
+	        for(Bala bala : balasMuertas) {
+	        	balas.remove(bala);
+	        }
 	        // monitorear inicio del juego
-	        if (ball.estaQuieto()) {
+	        /**if (ball.estaQuieto()) {
 	        	ball.setXY(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11);
 	        	if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) ball.setEstaQuieto(false);
 	        }else ball.update();
@@ -79,38 +92,35 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        if (ball.getY()<0) {
 	        	vidas--;
 	        	//nivel = 1;
-	        	ball = new PingBall(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
-	        }
+	        	ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
+	        }**/
 	        // verificar game over
-	        if (vidas<=0) {
+	        /**if (vidas<=0) {
 	        	vidas = 3;
 	        	nivel = 1;
 	        	crearBloques(2+nivel);
-	        	//ball = new PingBall(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
-	        }
+	        	//ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
+	        }**/
 	        // verificar si el nivel se terminó
-	        if (blocks.size()==0) {
+	        if (bloques.size()==0) {
 	        	nivel++;
 	        	crearBloques(2+nivel);
-	        	ball = new PingBall(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
 	        }    	
 	        //dibujar bloques
-	        for (Block b : blocks) {        	
+	        for (Block b : bloques) {        	
 	            b.draw(shape);
-	            ball.checkCollision(b);
 	        }
 	        // actualizar estado de los bloques 
-	        for (int i = 0; i < blocks.size(); i++) {
-	            Block b = blocks.get(i);
+	        for (int i = 0; i < bloques.size(); i++) {
+	            Block b = bloques.get(i);
 	            if (b.destroyed) {
 	            	puntaje++;
-	                blocks.remove(b);
+	                bloques.remove(b);
 	                i--; //para no saltarse 1 tras eliminar del arraylist
 	            }
 	        }
 	        
-	        ball.checkCollision(pad);
-	        ball.draw(shape);
+	        //ball.checkCollision(pad);
 	        
 	        shape.end();
 	        dibujaTextos();
