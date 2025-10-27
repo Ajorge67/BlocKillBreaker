@@ -113,7 +113,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        // actualizar estado de los bloques 
 	        for (int i = 0; i < bloques.size(); i++) {
 	            Block b = bloques.get(i);
-	            if (b.destroyed) {
+	            if (b.isDestroyed()) {
 	            	puntaje++;
 	                bloques.remove(b);
 	                i--; //para no saltarse 1 tras eliminar del arraylist

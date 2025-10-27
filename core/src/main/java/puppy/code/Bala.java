@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Bala {
+public class Bala implements Colisionable {
 	    private int x;
 	    private int y;
 	    private int size;
@@ -74,16 +74,16 @@ public class Bala {
 	    	return intersectaX && intersectaY;
 	    }**/
 	    
-	    public void checkCollision(Block block) {
+	    public void checkCollision(Posicionable block) {
 	        if(collidesWith(block)){
 	            colisiono = true;
-	            block.destroyed = true;
+	            ((Block)block).setDestroyed(true);
 	        }
 	    }
-	    private boolean collidesWith(Block bb) {
+	    public boolean collidesWith(Posicionable bb) {
 
-	    	boolean intersectaX = (bb.x + bb.width >= x-size) && (bb.x <= x+size);
-	        boolean intersectaY = (bb.y + bb.height >= y-size) && (bb.y <= y+size);		
+	    	boolean intersectaX = (bb.getX() + ((Block)bb).getWidth() >= x-size) && (bb.getX() <= x+size);
+	        boolean intersectaY = (bb.getY() + ((Block)bb).getHeight() >= y-size) && (bb.getY() <= y+size);		
 	    	return intersectaX && intersectaY;
 	    }
 	    
