@@ -45,14 +45,14 @@ public class Obstaculo implements Colisionable, Posicionable {
 	public void checkCollision(Posicionable jugador) {
 		if(collidesWith(jugador)) {
 			colisiono = true;
-			((Player)jugador).setEstadoDestruido(true);
+			jugador.setEstadoDestruido(true);
 		}
 	}
 	
 	public boolean collidesWith(Posicionable jugador) {
-		boolean intersectaX = (jugador.getX() + ((Player)jugador).getWidth() >= x-width) && (jugador.getX() <= x+width);
-        boolean intersectaY = (jugador.getY() - 2 * ((Player)jugador).getHeight() >= y-height) && (jugador.getY() <= y+height);		
-    	return intersectaX && intersectaY;
+		boolean intersectaX = (jugador.getX() + jugador.getWidth() > x) && (jugador.getX() < x + width);
+		boolean intersectaY = (jugador.getY() + jugador.getHeight() > y) && (jugador.getY() < y + height);
+		return intersectaX && intersectaY;
 	}
 
 }
