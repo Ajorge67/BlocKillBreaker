@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,6 +26,10 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private ArrayList<Bala> balas = new ArrayList<>();
 	private ArrayList<Colisionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
+	private ArrayList<Item> items = new ArrayList<>();
+	private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
+	private ArrayList<String> tiposDeItemsPosibles = new ArrayList<>();
+	private Texture texturaItem;
 	private int vidas;
 	private int puntaje;
 	private int nivel;
@@ -45,6 +50,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    vidas = 3;
 		    puntaje = 0;
 		    spawnObstaculos = 500000000;
+		    texturaItem = new Texture("placeholder.png");
+		    tiposDeItemsPosibles.add("AumentarTamano");
+		    tiposDeItemsPosibles.add("AumentarVelocidad");
+		    tiposDeItemsPosibles.add("DisminuirTamano");
+		    tiposDeItemsPosibles.add("DisminuirVelocidad");
+		    tiposDeItemsPosibles.add("Escudo");
 		}
 		
 		public void crearBloques(int filas) {
@@ -66,10 +77,55 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			int velocidad = 10;
 			int danio = 1; //aun no se ocupa
 			int alto = 30;
-			int ancho = 30;
+		 	int ancho = 30;
 			Obstaculo obs = new Obstaculo(pos_x, pos_y, velocidad, danio, ancho, alto );
 			obstaculos.add(obs);
 			ultimoObstaculo = TimeUtils.nanoTime(); //esto deja constancia de cuando fue el ultimo obstaculo creado
+		}
+		
+		public void crearItem(int x, int y) {
+		   
+		    float random = MathUtils.random(); // Guardamos el número aleatorio
+		    int indiceAleatorio = MathUtils.random(tiposDeItemsPosibles.size() - 1);
+		    String tipoElegido = tiposDeItemsPosibles.get(indiceAleatorio);
+		    Item nuevoItem = null;
+
+		    if (random >= 0.05f) // si el numero es mayor a 0.05f la funcion se detiene
+		        return; 
+		    
+		    if (tiposDeItemsPosibles.isEmpty()) // si el array esta vacio se detiene
+		        return;
+		    
+		    switch (tipoElegido) {
+	        case "AumentarTamano":
+	            nuevoItem = new AumentarTamano(x, y, texturaItem); 
+	            //System.out.println("A");
+	            break;
+	            
+	        case "AumentarVelocidad":
+	            nuevoItem = new AumentarVelocidad(x, y, texturaItem);
+	            //System.out.println("B");
+	            break;
+	            
+	        case "DisminuirTamano":
+	            nuevoItem = new DisminuirTamano(x, y, texturaItem);
+	            //System.out.println("C");
+	            break;
+	            
+	        case "DisminuirVelocidad":
+	            nuevoItem = new DisminuirVelocidad(x, y, texturaItem);
+	            //System.out.println("D");
+	            break;
+	            
+	        case "Escudo":
+	            nuevoItem = new Escudo(x, y, texturaItem);
+	            //System.out.println("E");
+	            break;   
+	    }
+		    
+		    if (nuevoItem != null) 
+		        items.add(nuevoItem);
+		    
 		}
 		
 		public void dibujaTextos() {
@@ -78,6 +134,9 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			//actualizar 
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
+			for (Item item : items) { //dibuja items
+		        batch.draw(item.getTextura(), item.getX(), item.getY());
+		    }
 			//dibujar textos
 			font.draw(batch, "Puntos: " + puntaje, 10, 25);
 			font.draw(batch, "Vidas : " + vidas, Gdx.graphics.getWidth()-20, 25);
@@ -86,88 +145,101 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		@Override
 		public void render () {
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
-	        shape.begin(ShapeRenderer.ShapeType.Filled);
-	        jugador.mover(Gdx.graphics.getWidth());
-	        jugador.draw(shape);
-	        
-	        //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
-	        if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
-	        	crearObstaculo();
-	        
-	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
-	        for(Bala bala : balas) {
-	        	bala.actualizar();
-	        	for(Block bloque : bloques)
-	        		bala.checkCollision(bloque);
-	        	for(Obstaculo obs : obstaculos)
-	        		bala.checkCollision(obs);
-	        	if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
-	        	bala.draw(shape);
-	        }
-	        
-	        for(Obstaculo obs : obstaculos) {
-	        	obs.actualizar();
-	        	obs.checkCollision(jugador);
-	        	if(jugador.getEstado()) {
-		        	vidas -= 1;
-		        	jugador.setEstadoDestruido(false);
-	        	}
-	        	if(obs.getEstado())
-	        		entidadesMuertas.add(obs);
-	        	obs.draw(shape);
-	        }
-	        
-	        //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
-	        for(Colisionable entidad : entidadesMuertas) {
-	        	balas.remove(entidad);
-	        	obstaculos.remove(entidad);
-	        }
-	        // monitorear inicio del juego
-	        /**if (ball.estaQuieto()) {
-	        	ball.setXY(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11);
-	        	if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) ball.setEstaQuieto(false);
-	        }else ball.update();
-	        //verificar si se fue la bola x abajo
-	        if (ball.getY()<0) {
-	        	vidas--;
-	        	//nivel = 1;
-	        	ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
-	        }**/
-	        // verificar game over
-	        if (vidas<=0) {
-	        	vidas = 3;
-	        	nivel = 1;
-	        	crearBloques(2+nivel);
-	        	spawnObstaculos = 500000000;
-	        	//ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
-	        }
-	        // verificar si el nivel se terminó
-	        if (bloques.size()==0) {
-	        	if(nivel < 6)nivel++;
-	        	crearBloques(2+nivel);
-	        	spawnObstaculos -= 50000000;
-	        }    	
-	        //dibujar bloques
-	        for (Block b : bloques) {        	
-	            b.draw(shape);
-	        }
-	        // actualizar estado de los bloques 
-	        for (int i = 0; i < bloques.size(); i++) {
-	            Block b = bloques.get(i);
-	            if (b.getEstado()) {
-	            	puntaje++;
-	                bloques.remove(b);
-	                i--; //para no saltarse 1 tras eliminar del arraylist
-	            }
-	        }
-	        
-	        //ball.checkCollision(pad);
-	        
-	        shape.end();
-	        dibujaTextos();
-	        
+		    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
+		    shape.begin(ShapeRenderer.ShapeType.Filled);
+		    jugador.mover(Gdx.graphics.getWidth());
+		    jugador.draw(shape);
+		    float delta = Gdx.graphics.getDeltaTime();
+		    
+		    //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
+		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
+		        crearObstaculo();
+		    
+		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
+		    for(Bala bala : balas) {
+		        bala.actualizar();
+		        for(Block bloque : bloques)
+		            bala.checkCollision(bloque);
+		        for(Obstaculo obs : obstaculos)
+		            bala.checkCollision(obs);
+		        if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
+		        bala.draw(shape);
+		    }
+		    
+		    for(Obstaculo obs : obstaculos) {
+		        obs.actualizar();
+		        obs.checkCollision(jugador);
+		        if(jugador.getEstado()) {
+		            vidas -= 1;
+		            jugador.setEstadoDestruido(false);
+		        }
+		        if(obs.getEstado())
+		            entidadesMuertas.add(obs);
+		        obs.draw(shape);
+		    }
+		   
+		    for (Item item : items) {
+		        item.caida(delta); // Mueve el item hacia abajo
+		    
+		        if (item.getY() < -item.getTextura().getHeight()) { // Si se salio por abajo
+		            itemsEliminados.add(item);
+		        }
+		    }
+
+		    		  
+		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
+		    for(Colisionable entidad : entidadesMuertas) {
+		        balas.remove(entidad);
+		        obstaculos.remove(entidad);
+		    }
+		    // monitorear inicio del juego
+		    /**if (ball.estaQuieto()) {
+		        ball.setXY(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11);
+		        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) ball.setEstaQuieto(false);
+		    }else ball.update();
+		    //verificar si se fue la bola x abajo
+		    if (ball.getY()<0) {
+		        vidas--;
+		        //nivel = 1;
+		        ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
+		    }**/
+		    
+		    // verificar game over
+		    if (vidas<=0) {
+		        vidas = 3;
+		        nivel = 1;
+		        crearBloques(2+nivel);
+		        spawnObstaculos = 500000000;
+		        //ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
+		    }
+		    // verificar si el nivel se terminó
+		    if (bloques.size()==0) {
+		        if(nivel < 6)nivel++;
+		        crearBloques(2+nivel);
+		        spawnObstaculos -= 50000000;
+		    }    	
+		    //dibujar bloques
+		    for (Block b : bloques) {        	
+		        b.draw(shape);
+		    }
+		    // actualizar estado de los bloques 
+		    for (int i = 0; i < bloques.size(); i++) {
+		        Block b = bloques.get(i);
+		        if (b.getEstado()) {
+		            puntaje++;
+		            crearItem((int)b.getX(), (int)b.getY()); // cuando se rompe el bloque, crea item
+		            bloques.remove(b);
+		            i--; //para no saltarse 1 tras eliminar del arraylist
+		        }
+		    }
+		    
+		    //ball.checkCollision(pad);
+		    
+		    shape.end();
+		    dibujaTextos();
+		    
 		}
+		
 		
 		@Override
 		public void dispose () {
