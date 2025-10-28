@@ -35,16 +35,16 @@ public class Player  implements Posicionable  {
 
 	public void draw(ShapeRenderer shape){
         shape.setColor(Color.BLUE);
-        int x2 = x; //= Gdx.input.getX();
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) x2 =x - velocidad;
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) x2=x + velocidad; 
-       // y = Gdx.graphics.getHeight() - Gdx.input.getY(); 
-        if (x2 > 0 && x2+width < Gdx.graphics.getWidth()) {
-            x = x2;
-        }
         shape.rect(x, y, width, height);
     }
     
+	public void mover(int widthVentana) {
+		int copiaX = x;
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))copiaX = x - velocidad;
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))copiaX = x + velocidad;
+		if (copiaX > 0 && copiaX + width < widthVentana) x = copiaX;
+	}
+	
     public Bala disparar() {
     	return new Bala(x + width/2,y,5,10);
     }

@@ -23,12 +23,13 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private Player jugador;
 	private ArrayList<Block> bloques = new ArrayList<>();
 	private ArrayList<Bala> balas = new ArrayList<>();
-	private ArrayList<Colisionable> balasMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
+	private ArrayList<Colisionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private int vidas;
 	private int puntaje;
 	private int nivel;
 	private long ultimoObstaculo;
+	private long spawnObstaculos;
     
 		@Override
 		public void create () {	
@@ -42,7 +43,8 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    shape = new ShapeRenderer();
 		    jugador = new Player(Gdx.graphics.getWidth()/2-35,40,35,10,10);
 		    vidas = 3;
-		    puntaje = 0;    
+		    puntaje = 0;
+		    spawnObstaculos = 500000000;
 		}
 		
 		public void crearBloques(int filas) {
@@ -60,7 +62,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		public void crearObstaculo() {
 			int pos_x = MathUtils.random(0, 800 - 5);
-			int pos_y = 480;
+			int pos_y = Gdx.graphics.getHeight();
 			int velocidad = 10;
 			int danio = 1; //aun no se ocupa
 			int alto = 30;
@@ -84,13 +86,13 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		@Override
 		public void render () {
-			System.out.println(balas.size());
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
 	        shape.begin(ShapeRenderer.ShapeType.Filled);
+	        jugador.mover(Gdx.graphics.getWidth());
 	        jugador.draw(shape);
 	        
 	        //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
-	        if(TimeUtils.nanoTime() - ultimoObstaculo > 1000000005)
+	        if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
 	        	crearObstaculo();
 	        
 	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
@@ -100,7 +102,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        		bala.checkCollision(bloque);
 	        	for(Obstaculo obs : obstaculos)
 	        		bala.checkCollision(obs);
-	        	if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())balasMuertas.add(bala);
+	        	if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
 	        	bala.draw(shape);
 	        }
 	        
@@ -112,14 +114,14 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        	jugador.setEstadoDestruido(false);
 	        	}
 	        	if(obs.getEstado())
-	        		balasMuertas.add(obs);
+	        		entidadesMuertas.add(obs);
 	        	obs.draw(shape);
 	        }
 	        
-	        
-	        for(Colisionable bala : balasMuertas) {
-	        	balas.remove(bala);
-	        	obstaculos.remove(bala);
+	        //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
+	        for(Colisionable entidad : entidadesMuertas) {
+	        	balas.remove(entidad);
+	        	obstaculos.remove(entidad);
 	        }
 	        // monitorear inicio del juego
 	        /**if (ball.estaQuieto()) {
@@ -137,12 +139,14 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        	vidas = 3;
 	        	nivel = 1;
 	        	crearBloques(2+nivel);
+	        	spawnObstaculos = 500000000;
 	        	//ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
 	        }
 	        // verificar si el nivel se terminó
 	        if (bloques.size()==0) {
-	        	nivel++;
+	        	if(nivel < 6)nivel++;
 	        	crearBloques(2+nivel);
+	        	spawnObstaculos -= 50000000;
 	        }    	
 	        //dibujar bloques
 	        for (Block b : bloques) {        	

@@ -23,7 +23,7 @@ public class Lwjgl3Launcher {
         configuration.setForegroundFPS(60);
         
         //Esto es para el tamaño de la ventana
-        configuration.setWindowedMode(640, 480);
+        configuration.setWindowedMode(640, 670);
         
         //estos son los iconos que aparecen en la ventana y en la barra de tareas
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
