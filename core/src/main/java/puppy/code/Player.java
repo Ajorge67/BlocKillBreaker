@@ -11,6 +11,7 @@ public class Player {
     private int width = 100;
     private int height = 10;
     private int velocidad;
+    private boolean escudo = false;
     
     public Player(int x, int y, int ancho, int alto, int velocidad) {
     	this.x = x;
@@ -39,5 +40,25 @@ public class Player {
     
     public Bala disparar() {
     	return new Bala(x,y,5,10);
+    }
+    
+    public void ganarEscudo() {
+    	//por implementar
+    }
+    
+    public void hacerGrande() {
+    	// por implementar
+    }
+    
+    public void hacerPequeno() {
+    	// por implementar
+    }
+    
+    public void masRapido() {
+    	// por implementar
+    }
+    
+    public void masLento() {
+    	// por implementar
     }
 }
