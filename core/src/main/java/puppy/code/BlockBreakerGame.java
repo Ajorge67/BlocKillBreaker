@@ -46,7 +46,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    nivel = 1;
 		    crearBloques(2+nivel);
 		    shape = new ShapeRenderer();
-		    jugador = new Player(Gdx.graphics.getWidth()/2-35,40,35,10,10);
+		    jugador = new Player(Gdx.graphics.getWidth()/2-35, 30, 35, 20, 10);
 		    vidas = 3;
 		    puntaje = 0;
 		    spawnObstaculos = 500000000;
@@ -149,7 +149,8 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    shape.begin(ShapeRenderer.ShapeType.Filled);
 		    jugador.mover(Gdx.graphics.getWidth());
 		    jugador.draw(shape);
-		    float delta = Gdx.graphics.getDeltaTime();
+		    float delta = Math.min(Gdx.graphics.getDeltaTime(), 1/30f); // para caida de item
+		    jugador.updateEfectos(delta);
 		    
 		    //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
@@ -180,12 +181,17 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		   
 		    for (Item item : items) {
 		        item.caida(delta); // Mueve el item hacia abajo
-		    
-		        if (item.getY() < -item.getTextura().getHeight()) { // Si se salio por abajo
-		            itemsEliminados.add(item);
+		        if (jugador.getBounds().overlaps(item.getBoundingBox())) {
+		        	item.aplicarEfecto(jugador);
+		        	itemsEliminados.add(item);
 		        }
+		        
+		        else if (item.getY() < -item.getTextura().getHeight())  // Si se salio por abajo
+		            itemsEliminados.add(item);
 		    }
-
+		    
+		    items.removeAll(itemsEliminados);
+		    itemsEliminados.clear();
 		    		  
 		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
 		    for(Colisionable entidad : entidadesMuertas) {
