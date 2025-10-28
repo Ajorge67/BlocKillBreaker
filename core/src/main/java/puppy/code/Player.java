@@ -5,12 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Player {
-    private int x = 20;
-    private int y = 20;
-    private int width = 100;
-    private int height = 10;
+public class Player  implements Posicionable  {
+    private int x;
+    private int y;
+    private int width;
+    private int height;
     private int velocidad;
+    private boolean dañado = false;
     private boolean escudo = false;
     
     public Player(int x, int y, int ancho, int alto, int velocidad) {
@@ -21,10 +22,16 @@ public class Player {
     	this.velocidad = velocidad;
     }
      
+    public void setX(int x) {this.x = x;}
+	public void setY(int y) {this.y = y;}
     public int getX() {return x;}
 	public int getY() {return y;}
 	public int getWidth() {return width;}
 	public int getHeight() {return height;}
+	public void setWidth(int width) {this.width = width;}
+	public void setHeight(int height) {this.height = height;}
+	public void setEstadoDestruido(boolean destroyed) {dañado = destroyed;}
+	public boolean getEstado() {return dañado;}
 
 	public void draw(ShapeRenderer shape){
         shape.setColor(Color.BLUE);
@@ -39,7 +46,7 @@ public class Player {
     }
     
     public Bala disparar() {
-    	return new Bala(x,y,5,10);
+    	return new Bala(x + width/2,y,5,10);
     }
     
     public void ganarEscudo() {

@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class BlockBreakerGame extends ApplicationAdapter {
@@ -21,10 +23,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private Player jugador;
 	private ArrayList<Block> bloques = new ArrayList<>();
 	private ArrayList<Bala> balas = new ArrayList<>();
-	private ArrayList<Bala> balasMuertas = new ArrayList<>();
+	private ArrayList<Colisionable> balasMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
+	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private int vidas;
 	private int puntaje;
 	private int nivel;
+	private long ultimoObstaculo;
     
 		@Override
 		public void create () {	
@@ -35,12 +39,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    font.getData().setScale(3, 2);
 		    nivel = 1;
 		    crearBloques(2+nivel);
-			
 		    shape = new ShapeRenderer();
 		    jugador = new Player(Gdx.graphics.getWidth()/2-35,40,35,10,10);
 		    vidas = 3;
 		    puntaje = 0;    
 		}
+		
 		public void crearBloques(int filas) {
 			bloques.clear();
 			int blockWidth = 70;
@@ -53,6 +57,19 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        }
 		    }
 		}
+		
+		public void crearObstaculo() {
+			int pos_x = MathUtils.random(0, 800 - 5);
+			int pos_y = 480;
+			int velocidad = 10;
+			int danio = 1; //aun no se ocupa
+			int alto = 30;
+			int ancho = 30;
+			Obstaculo obs = new Obstaculo(pos_x, pos_y, velocidad, danio, ancho, alto );
+			obstaculos.add(obs);
+			ultimoObstaculo = TimeUtils.nanoTime(); //esto deja constancia de cuando fue el ultimo obstaculo creado
+		}
+		
 		public void dibujaTextos() {
 			//actualizar matrices de la cámara
 			camera.update();
@@ -71,17 +88,38 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
 	        shape.begin(ShapeRenderer.ShapeType.Filled);
 	        jugador.draw(shape);
+	        
+	        //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
+	        if(TimeUtils.nanoTime() - ultimoObstaculo > 1000000005)
+	        	crearObstaculo();
+	        
 	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
 	        for(Bala bala : balas) {
 	        	bala.actualizar();
 	        	for(Block bloque : bloques)
 	        		bala.checkCollision(bloque);
+	        	for(Obstaculo obs : obstaculos)
+	        		bala.checkCollision(obs);
 	        	if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())balasMuertas.add(bala);
 	        	bala.draw(shape);
 	        }
 	        
-	        for(Bala bala : balasMuertas) {
+	        for(Obstaculo obs : obstaculos) {
+	        	obs.actualizar();
+	        	obs.checkCollision(jugador);
+	        	if(jugador.getEstado()) {
+		        	vidas -= 1;
+		        	jugador.setEstadoDestruido(false);
+	        	}
+	        	if(obs.getEstado())
+	        		balasMuertas.add(obs);
+	        	obs.draw(shape);
+	        }
+	        
+	        
+	        for(Colisionable bala : balasMuertas) {
 	        	balas.remove(bala);
+	        	obstaculos.remove(bala);
 	        }
 	        // monitorear inicio del juego
 	        /**if (ball.estaQuieto()) {
@@ -95,12 +133,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        	ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
 	        }**/
 	        // verificar game over
-	        /**if (vidas<=0) {
+	        if (vidas<=0) {
 	        	vidas = 3;
 	        	nivel = 1;
 	        	crearBloques(2+nivel);
 	        	//ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
-	        }**/
+	        }
 	        // verificar si el nivel se terminó
 	        if (bloques.size()==0) {
 	        	nivel++;
@@ -113,7 +151,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        // actualizar estado de los bloques 
 	        for (int i = 0; i < bloques.size(); i++) {
 	            Block b = bloques.get(i);
-	            if (b.isDestroyed()) {
+	            if (b.getEstado()) {
 	            	puntaje++;
 	                bloques.remove(b);
 	                i--; //para no saltarse 1 tras eliminar del arraylist
@@ -124,6 +162,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	        
 	        shape.end();
 	        dibujaTextos();
+	        
 		}
 		
 		@Override

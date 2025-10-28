@@ -28,7 +28,9 @@ public class Block implements Posicionable{
     public int getWidth() {
 		return width;
 	}
-
+    
+    public void setEstadoDestruido(boolean destroyed) {this.destroyed = destroyed;}
+	public boolean getEstado() {return destroyed;}
 
 
 	public void setWidth(int width) {
@@ -46,20 +48,6 @@ public class Block implements Posicionable{
 	public void setHeight(int height) {
 		this.height = height;
 	}
-
-
-
-	public boolean isDestroyed() {
-		return destroyed;
-	}
-
-
-
-	public void setDestroyed(boolean destroyed) {
-		this.destroyed = destroyed;
-	}
-
-
 
 	public int getX() {
 		return x;

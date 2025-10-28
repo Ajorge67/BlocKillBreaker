@@ -77,13 +77,13 @@ public class Bala implements Colisionable {
 	    public void checkCollision(Posicionable block) {
 	        if(collidesWith(block)){
 	            colisiono = true;
-	            ((Block)block).setDestroyed(true);
+	            block.setEstadoDestruido(true);
 	        }
 	    }
 	    public boolean collidesWith(Posicionable bb) {
 
-	    	boolean intersectaX = (bb.getX() + ((Block)bb).getWidth() >= x-size) && (bb.getX() <= x+size);
-	        boolean intersectaY = (bb.getY() + ((Block)bb).getHeight() >= y-size) && (bb.getY() <= y+size);		
+	    	boolean intersectaX = (bb.getX() + bb.getWidth() >= x-size) && (bb.getX() <= x+size);
+	        boolean intersectaY = (bb.getY() + bb.getHeight() >= y-size) && (bb.getY() <= y+size);		
 	    	return intersectaX && intersectaY;
 	    }
 	    

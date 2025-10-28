@@ -4,7 +4,6 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import puppy.code.BlockBreakerGame;
 
-/** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
@@ -19,10 +18,15 @@ public class Lwjgl3Launcher {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("BlockBreaker2024");
         configuration.useVsync(true);
+        
+        //configura la cantidad de veces que se ejecuta el codigo cada segundo
         configuration.setForegroundFPS(60);
+        
+        //Esto es para el tamaño de la ventana
         configuration.setWindowedMode(640, 480);
+        
+        //estos son los iconos que aparecen en la ventana y en la barra de tareas
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;
-        //RARAFSDFSDFSF
     }
 }
