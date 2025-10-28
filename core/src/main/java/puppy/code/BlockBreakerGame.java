@@ -90,7 +90,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    String tipoElegido = tiposDeItemsPosibles.get(indiceAleatorio);
 		    Item nuevoItem = null;
 
-		    if (random >= 0.05f) // si el numero es mayor a 0.05f la funcion se detiene
+		    if (random >= 0.10f) // si el numero es mayor a 0.10f la funcion se detiene (yo lo dejaria en 0.05 o menos)
 		        return; 
 		    
 		    if (tiposDeItemsPosibles.isEmpty()) // si el array esta vacio se detiene
