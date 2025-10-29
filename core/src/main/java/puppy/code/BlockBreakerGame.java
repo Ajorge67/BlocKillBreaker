@@ -22,6 +22,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private BitmapFont font;
 	private ShapeRenderer shape;
 	private Player jugador;
+	private Enemigo boss;
 	private ArrayList<Block> bloques = new ArrayList<>();
 	private ArrayList<Bala> balas = new ArrayList<>();
 	private ArrayList<Colisionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
@@ -56,13 +57,14 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    tiposDeItemsPosibles.add("DisminuirTamano");
 		    tiposDeItemsPosibles.add("DisminuirVelocidad");
 		    tiposDeItemsPosibles.add("Escudo");
+		    boss = new Enemigo(10, Gdx.graphics.getHeight() - 100, Gdx.graphics.getWidth() - 20 ,Gdx.graphics.getHeight() -  Gdx.graphics.getHeight()/4 + 30, 100, false);
 		}
 		
 		public void crearBloques(int filas) {
 			bloques.clear();
 			int blockWidth = 70;
 		    int blockHeight = 26;
-		    int y = Gdx.graphics.getHeight();
+		    int y = Gdx.graphics.getHeight() -  Gdx.graphics.getHeight()/4;
 		    for (int cont = 0; cont<filas; cont++ ) {
 		    	y -= blockHeight+10;
 		    	for (int x = 5; x < Gdx.graphics.getWidth(); x += blockWidth + 10) {
@@ -140,6 +142,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			//dibujar textos
 			font.draw(batch, "Puntos: " + puntaje, 10, 25);
 			font.draw(batch, "Vidas : " + vidas, Gdx.graphics.getWidth()-20, 25);
+			font.draw(batch, "Nivel:" + nivel, Gdx.graphics.getWidth()/2, 25);
 			batch.end();
 		}	
 		
@@ -149,6 +152,8 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    shape.begin(ShapeRenderer.ShapeType.Filled);
 		    jugador.mover(Gdx.graphics.getWidth());
 		    jugador.draw(shape);
+		    boss.draw(shape);
+		    boss.setEstadoDestruido(false);
 		    float delta = Math.min(Gdx.graphics.getDeltaTime(), 1/30f); // para caida de item
 		    jugador.updateEfectos(delta);
 		    
@@ -159,6 +164,10 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
 		    for(Bala bala : balas) {
 		        bala.actualizar();
+		        bala.checkCollision(boss);
+		        if(boss.getEstado()) {
+		        	boss.setVida(boss.getVida() - 1);
+		        }
 		        for(Block bloque : bloques)
 		            bala.checkCollision(bloque);
 		        for(Obstaculo obs : obstaculos)
@@ -166,6 +175,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
 		        bala.draw(shape);
 		    }
+		    
 		    
 		    for(Obstaculo obs : obstaculos) {
 		        obs.actualizar();
@@ -219,10 +229,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        //ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
 		    }
 		    // verificar si el nivel se terminó
-		    if (bloques.size()==0) {
+		    if (boss.getVida() <= 0 && bloques.size() == 0) {
+		    	puntaje += 500;
 		        if(nivel < 6)nivel++;
 		        crearBloques(2+nivel);
 		        spawnObstaculos -= 50000000;
+		        boss.setVida(100);
 		    }    	
 		    //dibujar bloques
 		    for (Block b : bloques) {        	
