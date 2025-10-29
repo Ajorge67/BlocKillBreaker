@@ -8,15 +8,17 @@ public class Enemigo implements CuadradoDestructible {
 	private int y;
 	private int ancho;
 	private int alto;
-	private int vida;
+	private int vidaOriginal;
+	private int vidaActual;
 	private boolean destruido;
 	
-	public Enemigo(int x, int y, int ancho, int alto, int vida, boolean estado) {
+	public Enemigo(int x, int y, int ancho, int alto, int vidaOriginal, int vidaActual, boolean estado) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
-		this.vida = vida;
+		this.vidaOriginal = vidaOriginal;
+		this.vidaActual = vidaActual;
 		destruido = estado;
 	}
 	
@@ -30,10 +32,10 @@ public class Enemigo implements CuadradoDestructible {
 	public void setHeight(int height) {this.alto = height;}
 	public boolean getEstadoDestruido() {return destruido;}
 	public void setEstadoDestruido(boolean estado) {destruido = estado;}
-	public void setVida(int vida) {this.vida = vida;}
-	public int getVida() {return vida;}
-	
-	
+	public void setVidaOriginal(int vidaOriginal) {this.vidaOriginal = vidaOriginal;}
+	public int getVidaOriginal() {return vidaOriginal;}
+	public void setVidaActual(int vidaActual) {this.vidaActual = vidaActual;}
+	public int getVidaActual() {return vidaActual;}
 	
 	public void draw(ShapeRenderer shape){
 		if(destruido == true)

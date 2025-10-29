@@ -1,11 +1,13 @@
 package puppy.code;
 
 import java.util.ArrayList;
-
+import java.util.Random;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class BlockBreakerGame extends ApplicationAdapter {
     private OrthographicCamera camera;
+    private Music musicaFondo;
 	private SpriteBatch batch;	   
 	private BitmapFont font;
 	private ShapeRenderer shape;
@@ -28,19 +31,27 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private ArrayList<Posicionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private ArrayList<Item> items = new ArrayList<>();
-	private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
-	private ArrayList<String> tiposDeItemsPosibles = new ArrayList<>();
-	private Texture texturaItem;
+	//private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
+	//private ArrayList<String> tiposDeItemsPosibles = new ArrayList<>();
+	//private Texture texturaItem;
 	private int vidas;
 	private int puntaje;
 	private int nivel;
 	private long ultimoObstaculo;
 	private long spawnObstaculos;
+	private Sound sonidoDisparo;
+	private Random generadorNum = new Random();
     
 		@Override
 		public void create () {	
+			cargarItems();
 			camera = new OrthographicCamera();
 		    camera.setToOrtho(false, 800, 480);
+		    musicaFondo = (Music) Gdx.audio.newMusic(Gdx.files.internal("backgroundMusic.mp3"));
+		    musicaFondo.setLooping(true); // Para que se repita sin parar
+		    musicaFondo.setVolume(0.2f);
+		    musicaFondo.play();
+		    sonidoDisparo = Gdx.audio.newSound(Gdx.files.internal("disparo.mp3"));
 		    batch = new SpriteBatch();
 		    font = new BitmapFont();
 		    font.getData().setScale(3, 2);
@@ -51,13 +62,27 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    vidas = 3;
 		    puntaje = 0;
 		    spawnObstaculos = 500000000;
-		    texturaItem = new Texture("texturaEfecto.png");
-		    tiposDeItemsPosibles.add("AumentarTamano");
-		    tiposDeItemsPosibles.add("AumentarVelocidad");
-		    tiposDeItemsPosibles.add("DisminuirTamano");
-		    tiposDeItemsPosibles.add("DisminuirVelocidad");
-		    tiposDeItemsPosibles.add("Escudo");
-		    boss = new Enemigo(10, Gdx.graphics.getHeight() - 100, Gdx.graphics.getWidth() - 20 ,Gdx.graphics.getHeight() -  Gdx.graphics.getHeight()/4 + 30, 100, false);
+		    //texturaItem = new Texture("texturaEfecto.png");
+		    //tiposDeItemsPosibles.add("AumentarTamano");
+		    //tiposDeItemsPosibles.add("AumentarVelocidad");
+		    //tiposDeItemsPosibles.add("DisminuirTamano");
+		    //tiposDeItemsPosibles.add("DisminuirVelocidad");
+		    //tiposDeItemsPosibles.add("Escudo");
+		    boss = new Enemigo(10, Gdx.graphics.getHeight() - 100, Gdx.graphics.getWidth() - 20 ,Gdx.graphics.getHeight() -  Gdx.graphics.getHeight()/4 + 30, 100, 100, false);
+		}
+		
+		//Metodo para cargar los metodos static de cada subclase de Item
+		//Si se quiere crear un nuevo efecto, hay que agregarlo aqui.
+		public static void cargarItems() {
+			try {
+				Class.forName("puppy.code.AumentarTamano",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.AumentarVelocidad",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.DisminuirTamano",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.DisminuirVelocidad",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.Escudo",true, ClassLoader.getSystemClassLoader());
+			}catch(Exception e) {
+				System.out.println(e.getMessage());
+			}
 		}
 		
 		public void crearBloques(int filas) {
@@ -85,7 +110,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			ultimoObstaculo = TimeUtils.nanoTime(); //esto deja constancia de cuando fue el ultimo obstaculo creado
 		}
 		
-		public void crearItem(int x, int y) {
+		/**public void crearItem(int x, int y) {
 		   
 		    float random = MathUtils.random(); // Guardamos el número aleatorio
 		    int indiceAleatorio = MathUtils.random(tiposDeItemsPosibles.size() - 1);
@@ -128,7 +153,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    if (nuevoItem != null) 
 		        items.add(nuevoItem);
 		    
-		}
+		}**/
 		
 		public void dibujaTextos() {
 			//actualizar matrices de la cámara
@@ -140,12 +165,22 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			font.draw(batch, "Puntos: " + puntaje, 10, 25);
 			font.draw(batch, "Vidas : " + vidas, Gdx.graphics.getWidth()-20, 25);
 			font.draw(batch, "Nivel:" + nivel, Gdx.graphics.getWidth()/2, 25);
+			font.draw(batch, "Vida Jefe: " + barraVidaJefe(), 15, Gdx.graphics.getHeight() - 200);
 			batch.end();
 		}	
 		
+		public String barraVidaJefe() {
+			String barra = "";
+			float porcVida = ((float)boss.getVidaActual()/(float)boss.getVidaOriginal()) * 100;
+			int nBarras = (int)porcVida / 2;
+			for(int x = 0; x < nBarras; x++)
+				barra += "I";
+			return barra;
+		}
+		
 		@Override
 		public void render () {
-		    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
 		    shape.begin(ShapeRenderer.ShapeType.Filled);
 		    jugador.mover(Gdx.graphics.getWidth());
 		    jugador.draw(shape);
@@ -158,12 +193,15 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
 		        crearObstaculo();
 		    
-		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W))balas.add(jugador.disparar());
+		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+		    	sonidoDisparo.play();
+		    	balas.add(jugador.disparar());
+		    }
 		    for(Bala bala : balas) {
 		        bala.actualizar();
 		        bala.checkCollisionSquare(boss);
-		        if(boss.getEstadoDestruido()) {
-		        	boss.setVida(boss.getVida() - 1);
+		        if(boss.getEstadoDestruido() && bloques.size() == 0) {
+		        	boss.setVidaActual(boss.getVidaActual() - 1);
 		        }
 		        for(Block bloque : bloques)
 		            bala.checkCollisionSquare(bloque);
@@ -190,7 +228,6 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        item.actualizar(); // Mueve el item hacia abajo
 		        item.draw(shape);
 		        if (item.collidesWithSquare(jugador)) {
-		        	System.out.println("WENA CULIAO ATRAPASTE EL PODER");
 		        	item.aplicarEfecto(jugador);
 		        	entidadesMuertas.add(item);
 		        }
@@ -213,15 +250,18 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        nivel = 1;
 		        crearBloques(2+nivel);
 		        spawnObstaculos = 500000000;
-		        //ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);	        	
+		        puntaje = 0;
 		    }
 		    // verificar si el nivel se terminó
-		    if (boss.getVida() <= 0 && bloques.size() == 0) {
+		    if (boss.getVidaActual() <= 0 && bloques.size() == 0) {
 		    	puntaje += 500;
-		        if(nivel < 6)nivel++;
-		        crearBloques(2+nivel);
+		    	nivel++;
+		        if(nivel < 6)crearBloques(2+nivel);
+		        else crearBloques(8);
+		        
 		        spawnObstaculos -= 50000000;
-		        boss.setVida(100);
+		        boss.setVidaOriginal(100 + (nivel - 1) * 20); //La vida del boss aumenta 20 en cada nivel
+		        boss.setVidaActual(100 + (nivel - 1) * 20);
 		    }    	
 		    //dibujar bloques
 		    for (Block b : bloques) {        	
@@ -232,13 +272,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        Block b = bloques.get(i);
 		        if (b.getEstadoDestruido()) {
 		            puntaje++;
-		            crearItem((int)b.getX(), (int)b.getY()); // cuando se rompe el bloque, crea item
+		            if(generadorNum.nextInt(10) == 0)items.add(FabricaItems.generarItem(b.getX(), b.getY(), 45, 45, 10));
+		            //crearItem((int)b.getX(), (int)b.getY()); // cuando se rompe el bloque, crea item
 		            bloques.remove(b);
 		            i--; //para no saltarse 1 tras eliminar del arraylist
 		        }
 		    }
-		    
-		    //ball.checkCollision(pad);
 		    
 		    shape.end();
 		    
@@ -249,7 +288,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		@Override
 		public void dispose () {
-
+			musicaFondo.dispose();
 		}
 		//aaaaaaaaaaaaaaaaa
 	}

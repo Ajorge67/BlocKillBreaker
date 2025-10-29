@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Item implements ColisionableCuadrado, Posicionable{
-    private int x;
+	private int x;
     private int y;
     private int width;
     private int height;
     private int velocidad;
+    
+    //Constantes para la generacion de items.
+    public static final int WIDTHFIJO= 45, HEIGHTFIJO = 45, VELFIJA = 8;
 
     
     public Item(int x, int y, int width, int height, int velocidad) {
@@ -41,6 +44,7 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
     }
     
     public abstract void aplicarEfecto(Player jugador);
+    public abstract Item crearItem(int x, int y, int width, int height, int velocidad);
     public int getX() {return x;}
     public int getY() {return y;}
     public void setX(int x) {this.x = x;}

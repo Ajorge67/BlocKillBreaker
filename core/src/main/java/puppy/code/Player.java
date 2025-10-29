@@ -2,6 +2,7 @@ package puppy.code;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -17,6 +18,7 @@ public class Player  implements PosicionableCuadrado  {
     private int widthOriginal;
     private int velocidadOriginal;
     private float temporizadorEfecto = 0;
+    
 
     
     public Player(int x, int y, int ancho, int alto, int velocidad) {
