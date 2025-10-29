@@ -3,13 +3,13 @@ package puppy.code;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Enemigo implements Posicionable {
+public class Enemigo implements CuadradoDestructible {
 	private int x;
 	private int y;
 	private int ancho;
 	private int alto;
 	private int vida;
-	private boolean estado;
+	private boolean destruido;
 	
 	public Enemigo(int x, int y, int ancho, int alto, int vida, boolean estado) {
 		this.x = x;
@@ -17,7 +17,7 @@ public class Enemigo implements Posicionable {
 		this.ancho = ancho;
 		this.alto = alto;
 		this.vida = vida;
-		this.estado = estado;
+		destruido = estado;
 	}
 	
 	public void setX(int x) {this.x = x;}
@@ -28,14 +28,15 @@ public class Enemigo implements Posicionable {
 	public int getHeight() {return alto;}
 	public void setWidth(int width) {this.ancho = width;}
 	public void setHeight(int height) {this.alto = height;}
-	public boolean getEstado() {return estado;}
-	public void setEstadoDestruido(boolean destroyed) {estado = destroyed;}
+	public boolean getEstadoDestruido() {return destruido;}
+	public void setEstadoDestruido(boolean estado) {destruido = estado;}
 	public void setVida(int vida) {this.vida = vida;}
 	public int getVida() {return vida;}
 	
 	
+	
 	public void draw(ShapeRenderer shape){
-		if(estado == true)
+		if(destruido == true)
 			shape.setColor(Color.WHITE);
 		else
 			shape.setColor(Color.BLUE);

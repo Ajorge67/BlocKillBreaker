@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Player  implements Posicionable  {
+public class Player  implements PosicionableCuadrado  {
     private int x;
     private int y;
     private int width;
@@ -69,8 +69,8 @@ public class Player  implements Posicionable  {
     
 	public void mover(int widthVentana) {
 		int copiaX = x;
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))copiaX = x - velocidad;
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))copiaX = x + velocidad;
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A))copiaX = x - velocidad;
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D))copiaX = x + velocidad;
 		if (copiaX > 0 && copiaX + width < widthVentana) x = copiaX;
 	}
 	

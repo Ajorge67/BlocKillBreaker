@@ -3,14 +3,14 @@ package puppy.code;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Obstaculo implements Colisionable, Posicionable {
+public class Obstaculo implements ColisionableCuadrado, CuadradoDestructible{
 	private int x;
 	private int y;
 	private int velocidad;
 	private int daño;
 	private int width;
     private int height;
-	private boolean colisiono = false;
+    private boolean destruido;
 	private Color color = Color.RED;
 	
 	public Obstaculo(int x, int y, int velocidad, int daño, int alto, int ancho) {
@@ -20,6 +20,7 @@ public class Obstaculo implements Colisionable, Posicionable {
 		this.daño = daño;
 		width = ancho;
 	    height = alto;
+	    destruido = false;
 	}
 	
 	public int getX() {return x;}
@@ -30,8 +31,8 @@ public class Obstaculo implements Colisionable, Posicionable {
 	public int getHeight() {return height;}
 	public void setWidth(int width) {this.width = width;}
 	public void setHeight(int height) {this.height = height;}
-	public void setEstadoDestruido(boolean destroyed) {colisiono = destroyed;}
-	public boolean getEstado() {return colisiono;}
+	public boolean getEstadoDestruido() {return destruido;}
+	public void setEstadoDestruido(boolean estado) {destruido = estado;}
 	
 	public void draw(ShapeRenderer shape){
         shape.setColor(color);
@@ -42,14 +43,14 @@ public class Obstaculo implements Colisionable, Posicionable {
 		y -= velocidad;
 	}
 	
-	public void checkCollision(Posicionable jugador) {
-		if(collidesWith(jugador)) {
-			colisiono = true;
+	public void checkCollision(Player jugador) {
+		if(collidesWithSquare(jugador)) {
+			destruido = true;
 			jugador.setEstadoDestruido(true);
 		}
 	}
 	
-	public boolean collidesWith(Posicionable jugador) {
+	public boolean collidesWithSquare(PosicionableCuadrado jugador) {
 		boolean intersectaX = (jugador.getX() + jugador.getWidth() > x) && (jugador.getX() < x + width);
 		boolean intersectaY = (jugador.getY() + jugador.getHeight() > y) && (jugador.getY() < y + height);
 		return intersectaX && intersectaY;

@@ -25,7 +25,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private Enemigo boss;
 	private ArrayList<Block> bloques = new ArrayList<>();
 	private ArrayList<Bala> balas = new ArrayList<>();
-	private ArrayList<Colisionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
+	private ArrayList<ColisionableCuadrado> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private ArrayList<Item> items = new ArrayList<>();
 	private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
@@ -51,7 +51,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    vidas = 3;
 		    puntaje = 0;
 		    spawnObstaculos = 500000000;
-		    texturaItem = new Texture("placeholder.png");
+		    texturaItem = new Texture("texturaEfecto.png");
 		    tiposDeItemsPosibles.add("AumentarTamano");
 		    tiposDeItemsPosibles.add("AumentarVelocidad");
 		    tiposDeItemsPosibles.add("DisminuirTamano");
@@ -161,17 +161,17 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
 		        crearObstaculo();
 		    
-		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE))balas.add(jugador.disparar());
+		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W))balas.add(jugador.disparar());
 		    for(Bala bala : balas) {
 		        bala.actualizar();
-		        bala.checkCollision(boss);
-		        if(boss.getEstado()) {
+		        bala.checkCollisionSquare(boss);
+		        if(boss.getEstadoDestruido()) {
 		        	boss.setVida(boss.getVida() - 1);
 		        }
 		        for(Block bloque : bloques)
-		            bala.checkCollision(bloque);
+		            bala.checkCollisionSquare(bloque);
 		        for(Obstaculo obs : obstaculos)
-		            bala.checkCollision(obs);
+		            bala.checkCollisionSquare(obs);
 		        if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
 		        bala.draw(shape);
 		    }
@@ -184,7 +184,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		            vidas -= 1;
 		            jugador.setEstadoDestruido(false);
 		        }
-		        if(obs.getEstado())
+		        if(obs.getEstadoDestruido())
 		            entidadesMuertas.add(obs);
 		        obs.draw(shape);
 		    }
@@ -204,7 +204,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    itemsEliminados.clear();
 		    		  
 		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
-		    for(Colisionable entidad : entidadesMuertas) {
+		    for(ColisionableCuadrado entidad : entidadesMuertas) {
 		        balas.remove(entidad);
 		        obstaculos.remove(entidad);
 		    }
@@ -243,7 +243,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    // actualizar estado de los bloques 
 		    for (int i = 0; i < bloques.size(); i++) {
 		        Block b = bloques.get(i);
-		        if (b.getEstado()) {
+		        if (b.getEstadoDestruido()) {
 		            puntaje++;
 		            crearItem((int)b.getX(), (int)b.getY()); // cuando se rompe el bloque, crea item
 		            bloques.remove(b);
