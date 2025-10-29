@@ -25,7 +25,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private Enemigo boss;
 	private ArrayList<Block> bloques = new ArrayList<>();
 	private ArrayList<Bala> balas = new ArrayList<>();
-	private ArrayList<ColisionableCuadrado> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
+	private ArrayList<Posicionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private ArrayList<Item> items = new ArrayList<>();
 	private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
@@ -100,27 +100,27 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    
 		    switch (tipoElegido) {
 	        case "AumentarTamano":
-	            nuevoItem = new AumentarTamano(x, y, texturaItem); 
+	            nuevoItem = new AumentarTamano(x, y, 45, 45,8); 
 	            //System.out.println("A");
 	            break;
 	            
 	        case "AumentarVelocidad":
-	            nuevoItem = new AumentarVelocidad(x, y, texturaItem);
+	            nuevoItem = new AumentarVelocidad(x, y, 45, 45 ,8);
 	            //System.out.println("B");
 	            break;
 	            
 	        case "DisminuirTamano":
-	            nuevoItem = new DisminuirTamano(x, y, texturaItem);
+	            nuevoItem = new DisminuirTamano(x, y, 45, 45 ,8);
 	            //System.out.println("C");
 	            break;
 	            
 	        case "DisminuirVelocidad":
-	            nuevoItem = new DisminuirVelocidad(x, y, texturaItem);
+	            nuevoItem = new DisminuirVelocidad(x, y, 45, 45 ,8);
 	            //System.out.println("D");
 	            break;
 	            
 	        case "Escudo":
-	            nuevoItem = new Escudo(x, y, texturaItem);
+	            nuevoItem = new Escudo(x, y, 45, 45 ,8);
 	            //System.out.println("E");
 	            break;   
 	    }
@@ -136,9 +136,6 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			//actualizar 
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
-			for (Item item : items) { //dibuja items
-		        batch.draw(item.getTextura(), item.getX(), item.getY());
-		    }
 			//dibujar textos
 			font.draw(batch, "Puntos: " + puntaje, 10, 25);
 			font.draw(batch, "Vidas : " + vidas, Gdx.graphics.getWidth()-20, 25);
@@ -190,35 +187,27 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    }
 		   
 		    for (Item item : items) {
-		        item.caida(delta); // Mueve el item hacia abajo
-		        if (jugador.getBounds().overlaps(item.getBoundingBox())) {
+		        item.actualizar(); // Mueve el item hacia abajo
+		        item.draw(shape);
+		        if (item.collidesWithSquare(jugador)) {
+		        	System.out.println("WENA CULIAO ATRAPASTE EL PODER");
 		        	item.aplicarEfecto(jugador);
 		        	itemsEliminados.add(item);
 		        }
 		        
-		        else if (item.getY() < -item.getTextura().getHeight())  // Si se salio por abajo
-		            itemsEliminados.add(item);
-		    }
-		    
+		        else if (item.getY() < 0)  // Si se salio por abajo
+		            entidadesMuertas.add(item);
+		        	
+		    };
+		    System.out.println(jugador.getWidth());
 		    items.removeAll(itemsEliminados);
 		    itemsEliminados.clear();
 		    		  
 		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
-		    for(ColisionableCuadrado entidad : entidadesMuertas) {
+		    for(Posicionable entidad : entidadesMuertas) {
 		        balas.remove(entidad);
 		        obstaculos.remove(entidad);
 		    }
-		    // monitorear inicio del juego
-		    /**if (ball.estaQuieto()) {
-		        ball.setXY(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11);
-		        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) ball.setEstaQuieto(false);
-		    }else ball.update();
-		    //verificar si se fue la bola x abajo
-		    if (ball.getY()<0) {
-		        vidas--;
-		        //nivel = 1;
-		        ball = new Bala(pad.getX()+pad.getWidth()/2-5, pad.getY()+pad.getHeight()+11, 10, 5, 7, true);
-		    }**/
 		    
 		    // verificar game over
 		    if (vidas<=0) {
@@ -254,6 +243,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    //ball.checkCollision(pad);
 		    
 		    shape.end();
+		    
 		    dibujaTextos();
 		    
 		}

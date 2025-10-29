@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Bala implements ColisionableCuadrado {
+public class Bala implements ColisionableCuadrado, Posicionable{
 	    private int x;
 	    private int y;
 	    private int size;
@@ -27,15 +27,15 @@ public class Bala implements ColisionableCuadrado {
 	    	this.x = x;
 	        this.y = y;
 	    }
+	    public int getX() {return x;}
 	    public int getY() {return y;}
+	    public void setX(int x) {this.x = x;}
+	    public void setY(int y) {this.y = y;}
 	    
-	    public boolean getColisiono() {
-	    	return colisiono;
-	    }
 	    
-	    public void setColisiono(boolean colisiono) {
-	    	this.colisiono = colisiono;
-	    }
+	    public boolean getColisiono() {return colisiono;}
+	    
+	    public void setColisiono(boolean colisiono) {this.colisiono = colisiono;}
 	    
 	    public void draw(ShapeRenderer shape){
 	        shape.setColor(color);

@@ -40,6 +40,7 @@ public class Player  implements PosicionableCuadrado  {
 	public boolean getEstado() {return dañado;}
 	public int getVelocidad() { return velocidad; }
     public void setVelocidad(int v) { this.velocidad = v; }
+    
 	public void setEstadoDestruido(boolean destroyed) {
 		if(destroyed) {
 			if(this.escudo) { // si hay escudo, no hay dano y se quita escudo
