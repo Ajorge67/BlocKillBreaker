@@ -181,7 +181,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		            vidas -= 1;
 		            jugador.setEstadoDestruido(false);
 		        }
-		        if(obs.getEstadoDestruido())
+		        if(obs.getEstadoDestruido() || obs.getY() < 0)
 		            entidadesMuertas.add(obs);
 		        obs.draw(shape);
 		    }
@@ -192,21 +192,19 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        if (item.collidesWithSquare(jugador)) {
 		        	System.out.println("WENA CULIAO ATRAPASTE EL PODER");
 		        	item.aplicarEfecto(jugador);
-		        	itemsEliminados.add(item);
+		        	entidadesMuertas.add(item);
 		        }
 		        
 		        else if (item.getY() < 0)  // Si se salio por abajo
 		            entidadesMuertas.add(item);
 		        	
 		    };
-		    System.out.println(jugador.getWidth());
-		    items.removeAll(itemsEliminados);
-		    itemsEliminados.clear();
 		    		  
 		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
 		    for(Posicionable entidad : entidadesMuertas) {
 		        balas.remove(entidad);
 		        obstaculos.remove(entidad);
+		        items.remove(entidad);
 		    }
 		    
 		    // verificar game over
