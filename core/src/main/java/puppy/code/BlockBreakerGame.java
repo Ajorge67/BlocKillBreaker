@@ -33,7 +33,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private int nivel;
 	private long ultimoObstaculo;
 	private long spawnObstaculos;
-	private Random generadorNum = new Random();
+	private Random generadorNum = new Random();//Generador de numeros randoms
 		@Override
 		public void create () {	
 			cargarSonidos();
@@ -62,7 +62,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo cargarItems: Sirve para cargar los metodos static de cada subclase de Item
 		Si se quiere crear un nuevo efecto, hay que agregarlo aqui.*/
-		public void cargarItems() {
+		private void cargarItems() {
 			try {
 				Class.forName("puppy.code.AumentarTamano",true, ClassLoader.getSystemClassLoader());
 				Class.forName("puppy.code.AumentarVelocidad",true, ClassLoader.getSystemClassLoader());
@@ -76,7 +76,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo cargarSonidos: Encargado de cargar los sonidos del juego a la clase
 		  CajaAudio. Si se agrega un nuevo audio hay que registrarlo aqui.*/
-		public void cargarSonidos() {
+		private void cargarSonidos() {
 			CajaAudio.cargarSonido("DISPARO", Gdx.audio.newSound(Gdx.files.internal("disparo.mp3")));
 			CajaAudio.cargarSonido("PASARNIVEL", Gdx.audio.newSound(Gdx.files.internal("pasarNivel.mp3")));
 			CajaAudio.cargarSonido("PERDERNIVEL", Gdx.audio.newSound(Gdx.files.internal("perderNivel.mp3")));
@@ -85,7 +85,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		}
 		
 		/*Metodo crearBloques: Encargado de generar los bloques del nivel.*/
-		public void crearBloques(int filas) {
+		private void crearBloques(int filas) {
 			bloques.clear();
 			int blockWidth = 70;
 		    int blockHeight = 26;
@@ -100,7 +100,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo dibujaTextos: Encargado de dibujar los textos que estan
 		  presentes en la pantalla, ademas de la barra de vida del jefe.*/
-		public void dibujaTextos() {
+		private void dibujaTextos() {
 			//actualizar matrices de la cámara
 			camera.update();
 			//actualizar 
@@ -117,7 +117,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		/*Metodo barraVidaJefe: Encargado de crear la barra de vida del jefe, en
 		 base a su vida actual y su vida original. Devuelve un string con caracteres
 		 que representan la cantidad de vida que tiene actualmente el jefe.*/
-		public String barraVidaJefe() {
+		private String barraVidaJefe() {
 			String barra = "";
 			float porcVida = ((float)boss.getVidaActual()/(float)boss.getVidaOriginal()) * 100;
 			int nBarras = (int)porcVida / 2;
@@ -128,7 +128,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo para generar los obstaculos en pantalla. La forma de generarlos
 		  cambia dependiendo del contexto que se esta en el nivel.*/
-		public void generarObstaculos() {
+		private void generarObstaculos() {
 			/*Condicion para generar obstaculos.*/
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos) {
 		    	if(bloques.size() == 0) //Si no hay bloques los obstaculos se generan arriba del jugador
@@ -144,7 +144,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		}
 		
 		/*Revision de si se presiono alguna tecla para disparar.*/
-		public void escucharDisparo() {
+		private void escucharDisparo() {
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
 		    	CajaAudio.reproducirSonido("DISPARO",1f);
 		    	balas.add(jugador.disparar());
@@ -154,7 +154,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		/*Metodo para controlar las balas en pantalla. Actualiza la posicion y
 	      las dibuja, ademas de revisar las colisiones. Actua dependiendo si choco con
 	      el enemigo, con un bloque o con un obstaculo.*/
-		public void procesarBalas() {
+		private void procesarBalas() {
 		    for(Bala bala : balas) {
 		        bala.actualizar();
 		        bala.checkCollisionSquare(boss);
@@ -182,7 +182,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	      y los dibuja. Comprueba si choco con el player para
 	      reducir su vida. Tambien revisa si los obstaculos fueron destruidos, para
 	      agregarlo a las entidades muertas.*/
-		public void procesarObstaculos() {
+		private void procesarObstaculos() {
 		    for(Obstaculo obs : obstaculos) {
 		        obs.actualizar();
 		        obs.checkCollision(jugador);
@@ -199,7 +199,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo para controlar los items en pantalla. Se actualiza su posicion
 	      y se dibujan, ademas de comprobar si hay colisiones con el jugador.*/
-		public void procesarItems() {
+		private void procesarItems() {
 		    for (Item item : items) {
 		        item.actualizar(); // Mueve el item hacia abajo
 		        item.draw(shape);
@@ -217,7 +217,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo para eliminar todas las entidades que deben desaparecer
 	      de la pantalla.*/
-		public void quitarEntidadesMuertas() {
+		private void quitarEntidadesMuertas() {
 		    for(Posicionable entidad : entidadesMuertas) {
 		        balas.remove(entidad);
 		        obstaculos.remove(entidad);
@@ -229,7 +229,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		/*Comprobamos si hay gameOver, que es cuando el jugador tiene 
 	      la vida en 0. Se reinician las variables de funcionamiento
 	      del juego.*/
-		public void gestionarGameOver() {
+		private void gestionarGameOver() {
 		    if (jugador.getVida()<=0) {
 		    	CajaAudio.reproducirSonido("PERDERNIVEL",0.3f);
 		        jugador.setVida(3);
@@ -243,7 +243,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Comprobamos si el nivel termino, que es cuando no quedan bloques
 	      y el boss no tiene vida.*/
-		public void gestionarLevelUp() {
+		private void gestionarLevelUp() {
 		    if (bloques.size() == 0 && boss.getVidaActual() <= 0) {
 		    	CajaAudio.reproducirSonido("PASARNIVEL",0.3f);
 		    	puntaje += 500;
@@ -262,7 +262,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		/*Metodo para revisar si los bloques fueron destruidos o no, aplicando
 	     la accion que corresponda segun eso.*/
-		public void procesarBloques() {
+		private void procesarBloques() {
 		    for (int i = 0; i < bloques.size(); i++) {
 		        Block b = bloques.get(i);
 		        b.draw(shape);

@@ -33,7 +33,6 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
     
     }
     
-    
     public boolean collidesWithSquare(PosicionableCuadrado jugador) {
     	boolean intersectaX = (jugador.getX() + jugador.getWidth() > x) && (jugador.getX() < x + width);
 		boolean intersectaY = (jugador.getY() + jugador.getHeight() > y) && (jugador.getY() < y + height);
