@@ -34,7 +34,6 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private long ultimoObstaculo;
 	private long spawnObstaculos;
 	private Random generadorNum = new Random();
-    
 		@Override
 		public void create () {	
 			cargarSonidos();
@@ -81,6 +80,8 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			CajaAudio.cargarSonido("DISPARO", Gdx.audio.newSound(Gdx.files.internal("disparo.mp3")));
 			CajaAudio.cargarSonido("PASARNIVEL", Gdx.audio.newSound(Gdx.files.internal("pasarNivel.mp3")));
 			CajaAudio.cargarSonido("PERDERNIVEL", Gdx.audio.newSound(Gdx.files.internal("perderNivel.mp3")));
+			CajaAudio.cargarSonido("DANIOJEFE", Gdx.audio.newSound(Gdx.files.internal("danioBoss.mp3")));
+			CajaAudio.cargarSonido("PERDERVIDA", Gdx.audio.newSound(Gdx.files.internal("perderVida.mp3")));
 		}
 		
 		/*Metodo crearBloques: Encargado de generar los bloques del nivel.*/
@@ -145,7 +146,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		/*Revision de si se presiono alguna tecla para disparar.*/
 		public void escucharDisparo() {
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
-		    	CajaAudio.reproducirSonido("DISPARO");
+		    	CajaAudio.reproducirSonido("DISPARO",1f);
 		    	balas.add(jugador.disparar());
 		    }
 		}
@@ -159,6 +160,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        bala.checkCollisionSquare(boss);
 		        
 		        if(boss.getEstadoDestruido() && bloques.size() == 0) {
+		        	CajaAudio.reproducirSonido("DANIOJEFE",0.2f);
 		        	boss.setVidaActual(boss.getVidaActual() - 1);
 		        }
 		        
@@ -185,6 +187,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        obs.actualizar();
 		        obs.checkCollision(jugador);
 		        if(jugador.getEstado()) {
+		        	CajaAudio.reproducirSonido("PERDERVIDA", 0.3f);
 		            jugador.setVida(jugador.getVida() - 1);
 		            jugador.setEstadoDestruido(false);
 		        }
@@ -228,7 +231,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	      del juego.*/
 		public void gestionarGameOver() {
 		    if (jugador.getVida()<=0) {
-		    	CajaAudio.reproducirSonido("PERDERNIVEL");
+		    	CajaAudio.reproducirSonido("PERDERNIVEL",0.3f);
 		        jugador.setVida(3);
 		        nivel = 1;
 		        crearBloques(2+nivel);
@@ -242,7 +245,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	      y el boss no tiene vida.*/
 		public void gestionarLevelUp() {
 		    if (bloques.size() == 0 && boss.getVidaActual() <= 0) {
-		    	CajaAudio.reproducirSonido("PASARNIVEL");
+		    	CajaAudio.reproducirSonido("PASARNIVEL",0.3f);
 		    	puntaje += 500;
 		    	nivel++;
 		        if(nivel < 6) //Solo hasta el nivel 6 se generan mas hileras de bloques, despues de mantiene la cantidad.

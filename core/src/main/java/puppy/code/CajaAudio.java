@@ -10,8 +10,8 @@ public class CajaAudio {
 		CAJASONIDO.put(clave, nuevo);
 	}
 	
-	public static void reproducirSonido(String clave) {
+	public static void reproducirSonido(String clave, float volumen) {
 		if(CAJASONIDO.containsKey(clave))
-			CAJASONIDO.get(clave).play();
+			CAJASONIDO.get(clave).play(volumen);
 	}
 }
