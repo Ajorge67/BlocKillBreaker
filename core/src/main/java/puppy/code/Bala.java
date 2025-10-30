@@ -31,10 +31,7 @@ public class Bala implements ColisionableCuadrado, Posicionable{
 	    public int getY() {return y;}
 	    public void setX(int x) {this.x = x;}
 	    public void setY(int y) {this.y = y;}
-	    
-	    
 	    public boolean getColisiono() {return colisiono;}
-	    
 	    public void setColisiono(boolean colisiono) {this.colisiono = colisiono;}
 	    
 	    public void draw(ShapeRenderer shape){
@@ -45,34 +42,6 @@ public class Bala implements ColisionableCuadrado, Posicionable{
 	    public void actualizar() {
 	    	y += velocidad;
 	    }
-	    
-	    /**public void update() {
-	    	if (estaQuieto) return;
-	        x += xSpeed;
-	        y += ySpeed;
-	        if (x-size < 0 || x+size > Gdx.graphics.getWidth()) {
-	            xSpeed = -xSpeed;
-	        }
-	        if (y+size > Gdx.graphics.getHeight()) {
-	            ySpeed = -ySpeed;
-	        }
-	    }
-	    
-	    public void checkCollision(Player paddle) {
-	        if(collidesWith(paddle)){
-	            color = Color.GREEN;
-	            ySpeed = -ySpeed;
-	        }
-	        else{
-	            color = Color.WHITE;
-	        }
-	    }
-	    private boolean collidesWith(Player pp) {
-
-	    	boolean intersectaX = (pp.getX() + pp.getWidth() >= x-size) && (pp.getX() <= x+size);
-	        boolean intersectaY = (pp.getY() + pp.getHeight() >= y-size) && (pp.getY() <= y+size);		
-	    	return intersectaX && intersectaY;
-	    }**/
 	    
 	    public void checkCollisionSquare(CuadradoDestructible block) {
 	        if(collidesWithSquare(block)){

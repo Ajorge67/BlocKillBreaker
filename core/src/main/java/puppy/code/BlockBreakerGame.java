@@ -10,7 +10,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -21,7 +20,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class BlockBreakerGame extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Music musicaFondo;
-	private SpriteBatch batch;	   
+	private SpriteBatch batch;  
 	private BitmapFont font;
 	private ShapeRenderer shape;
 	private Player jugador;
@@ -31,27 +30,25 @@ public class BlockBreakerGame extends ApplicationAdapter {
 	private ArrayList<Posicionable> entidadesMuertas = new ArrayList<>(); //aqui van a entrar tanto los obstaculos como las balas para eliminarlas.
 	private ArrayList<Obstaculo> obstaculos = new ArrayList<>();
 	private ArrayList<Item> items = new ArrayList<>();
-	//private ArrayList<Item> itemsEliminados = new ArrayList<>(); 
-	//private ArrayList<String> tiposDeItemsPosibles = new ArrayList<>();
-	//private Texture texturaItem;
 	private int vidas;
 	private int puntaje;
 	private int nivel;
 	private long ultimoObstaculo;
 	private long spawnObstaculos;
-	private Sound sonidoDisparo;
 	private Random generadorNum = new Random();
     
 		@Override
 		public void create () {	
+			cargarSonidos();
 			cargarItems();
 			camera = new OrthographicCamera();
-		    camera.setToOrtho(false, 800, 480);
+		    
+			camera.setToOrtho(false, 800, 480);
 		    musicaFondo = (Music) Gdx.audio.newMusic(Gdx.files.internal("backgroundMusic.mp3"));
 		    musicaFondo.setLooping(true); // Para que se repita sin parar
-		    musicaFondo.setVolume(0.2f);
+		    musicaFondo.setVolume(0.05f);
 		    musicaFondo.play();
-		    sonidoDisparo = Gdx.audio.newSound(Gdx.files.internal("disparo.mp3"));
+		    
 		    batch = new SpriteBatch();
 		    font = new BitmapFont();
 		    font.getData().setScale(3, 2);
@@ -62,18 +59,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    vidas = 3;
 		    puntaje = 0;
 		    spawnObstaculos = 500000000;
-		    //texturaItem = new Texture("texturaEfecto.png");
-		    //tiposDeItemsPosibles.add("AumentarTamano");
-		    //tiposDeItemsPosibles.add("AumentarVelocidad");
-		    //tiposDeItemsPosibles.add("DisminuirTamano");
-		    //tiposDeItemsPosibles.add("DisminuirVelocidad");
-		    //tiposDeItemsPosibles.add("Escudo");
 		    boss = new Enemigo(10, Gdx.graphics.getHeight() - 100, Gdx.graphics.getWidth() - 20 ,Gdx.graphics.getHeight() -  Gdx.graphics.getHeight()/4 + 30, 100, 100, false);
 		}
 		
 		//Metodo para cargar los metodos static de cada subclase de Item
 		//Si se quiere crear un nuevo efecto, hay que agregarlo aqui.
-		public static void cargarItems() {
+		public void cargarItems() {
 			try {
 				Class.forName("puppy.code.AumentarTamano",true, ClassLoader.getSystemClassLoader());
 				Class.forName("puppy.code.AumentarVelocidad",true, ClassLoader.getSystemClassLoader());
@@ -83,6 +74,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			}catch(Exception e) {
 				System.out.println(e.getMessage());
 			}
+		}
+		
+		public void cargarSonidos() {
+			CajaAudio.cargarSonido("DISPARO", Gdx.audio.newSound(Gdx.files.internal("disparo.mp3")));
+			CajaAudio.cargarSonido("PASARNIVEL", Gdx.audio.newSound(Gdx.files.internal("pasarNivel.mp3")));
+			CajaAudio.cargarSonido("PERDERNIVEL", Gdx.audio.newSound(Gdx.files.internal("perderNivel.mp3")));
 		}
 		
 		public void crearBloques(int filas) {
@@ -106,51 +103,6 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			obstaculos.add(obs);
 			ultimoObstaculo = TimeUtils.nanoTime(); //esto deja constancia de cuando fue el ultimo obstaculo creado
 		}
-		
-		/**public void crearItem(int x, int y) {
-		   
-		    float random = MathUtils.random(); // Guardamos el número aleatorio
-		    int indiceAleatorio = MathUtils.random(tiposDeItemsPosibles.size() - 1);
-		    String tipoElegido = tiposDeItemsPosibles.get(indiceAleatorio);
-		    Item nuevoItem = null;
-
-		    if (random >= 0.10f) // si el numero es mayor a 0.10f la funcion se detiene (yo lo dejaria en 0.05 o menos)
-		        return; 
-		    
-		    if (tiposDeItemsPosibles.isEmpty()) // si el array esta vacio se detiene
-		        return;
-		    
-		    switch (tipoElegido) {
-	        case "AumentarTamano":
-	            nuevoItem = new AumentarTamano(x, y, 45, 45,8); 
-	            //System.out.println("A");
-	            break;
-	            
-	        case "AumentarVelocidad":
-	            nuevoItem = new AumentarVelocidad(x, y, 45, 45 ,8);
-	            //System.out.println("B");
-	            break;
-	            
-	        case "DisminuirTamano":
-	            nuevoItem = new DisminuirTamano(x, y, 45, 45 ,8);
-	            //System.out.println("C");
-	            break;
-	            
-	        case "DisminuirVelocidad":
-	            nuevoItem = new DisminuirVelocidad(x, y, 45, 45 ,8);
-	            //System.out.println("D");
-	            break;
-	            
-	        case "Escudo":
-	            nuevoItem = new Escudo(x, y, 45, 45 ,8);
-	            //System.out.println("E");
-	            break;   
-	    }
-		    
-		    if (nuevoItem != null) 
-		        items.add(nuevoItem);
-		    
-		}**/
 		
 		public void dibujaTextos() {
 			//actualizar matrices de la cámara
@@ -177,6 +129,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		
 		@Override
 		public void render () {
+			System.out.println(nivel);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 		
 		    shape.begin(ShapeRenderer.ShapeType.Filled);
 		    jugador.mover(Gdx.graphics.getWidth());
@@ -189,27 +142,34 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos) {
 		    	if(bloques.size() == 0)
-		    		crearObstaculo(jugador.getX(),Gdx.graphics.getHeight(), 10 + nivel);
+		    		if(nivel < 8)
+		    			crearObstaculo(jugador.getX(),Gdx.graphics.getHeight(), 10 + nivel);
+		    		else
+		    			crearObstaculo(jugador.getX(),Gdx.graphics.getHeight(), 18);
 		    	else
 		    		crearObstaculo(MathUtils.random(0, 800 - 30), Gdx.graphics.getHeight(), 10);
 		    }
 		    
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
-		    	sonidoDisparo.play();
+		    	CajaAudio.reproducirSonido("DISPARO");
 		    	balas.add(jugador.disparar());
 		    }
 		    for(Bala bala : balas) {
 		        bala.actualizar();
 		        bala.checkCollisionSquare(boss);
+		        
 		        if(boss.getEstadoDestruido() && bloques.size() == 0) {
 		        	boss.setVidaActual(boss.getVidaActual() - 1);
 		        }
+		        
 		        for(Block bloque : bloques)
 		            bala.checkCollisionSquare(bloque);
+		        
 		        if(bloques.size() != 0) {
 		        	for(Obstaculo obs : obstaculos)
 		        		bala.checkCollisionSquare(obs);
 		        }
+		        
 		        if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
 		        bala.draw(shape);
 		    }
@@ -239,6 +199,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		            entidadesMuertas.add(item);
 		        	
 		    };
+		    
 		    		  
 		    //Ciclo para eliminar todas las entidades que tras colisionar deben desaparecer.
 		    for(Posicionable entidad : entidadesMuertas) {
@@ -249,6 +210,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    
 		    // verificar game over
 		    if (vidas<=0) {
+		    	CajaAudio.reproducirSonido("PERDERNIVEL");
 		        vidas = 3;
 		        nivel = 1;
 		        crearBloques(2+nivel);
@@ -257,6 +219,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    }
 		    // verificar si el nivel se terminó
 		    if (boss.getVidaActual() <= 0 && bloques.size() == 0) {
+		    	CajaAudio.reproducirSonido("PASARNIVEL");
 		    	puntaje += 500;
 		    	nivel++;
 		        if(nivel < 6)crearBloques(2+nivel);
