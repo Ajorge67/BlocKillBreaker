@@ -6,20 +6,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Obstaculo implements ColisionableCuadrado, CuadradoDestructible{
 	private int x;
 	private int y;
-	private int velocidad;
-	private int daño;
 	private int width;
     private int height;
+    private int velocidad;
     private boolean destruido;
 	private Color color = Color.RED;
 	
-	public Obstaculo(int x, int y, int velocidad, int daño, int alto, int ancho) {
+	public Obstaculo(int x, int y, int alto, int ancho, int velocidad) {
 		this.x = x;
 		this.y = y;
-		this.velocidad = velocidad;
-		this.daño = daño;
 		width = ancho;
 	    height = alto;
+	    this.velocidad = velocidad;
 	    destruido = false;
 	}
 	

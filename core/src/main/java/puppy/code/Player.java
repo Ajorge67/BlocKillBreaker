@@ -12,15 +12,14 @@ public class Player  implements PosicionableCuadrado  {
     private int width;
     private int height;
     private int velocidad;
+    private int vida;
     private boolean dañado = false;
     private boolean escudo = false;
     private int widthOriginal;
     private int velocidadOriginal;
     private float temporizadorEfecto = 0;
     
-
-    
-    public Player(int x, int y, int ancho, int alto, int velocidad) {
+    public Player(int x, int y, int ancho, int alto, int velocidad, int vida) {
     	this.x = x;
     	this.y= y;
     	width = ancho;
@@ -28,6 +27,7 @@ public class Player  implements PosicionableCuadrado  {
     	this.velocidad = velocidad;
     	this.widthOriginal = ancho; 
     	this.velocidadOriginal = velocidad;
+    	this.vida = vida;
     }
      
     public void setX(int x) {this.x = x;}
@@ -41,15 +41,18 @@ public class Player  implements PosicionableCuadrado  {
 	public boolean getEstado() {return dañado;}
 	public int getVelocidad() { return velocidad; }
     public void setVelocidad(int v) { this.velocidad = v; }
+    public int getVida() {return vida;}
+    public void setVida(int vida) {this.vida = vida;}
+    
     
 	public void setEstadoDestruido(boolean destroyed) {
 		if(destroyed) {
-			if(this.escudo) { // si hay escudo, no hay dano y se quita escudo
-				this.dañado = false;
-				this.escudo = false;
+			if(escudo) { // si hay escudo, no hay dano y se quita escudo
+				dañado = false;
+				escudo = false;
 			}
 			else 
-				this.dañado = true;
+				dañado = true;
 			
 		}
 		else 
@@ -103,10 +106,9 @@ public class Player  implements PosicionableCuadrado  {
     	setVelocidad( Math.min(20, (int)(velocidadOriginal * 0.2f)) );
     	this.temporizadorEfecto = 5.0f;
     }
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
-    }
-	public void updateEfectos(float delta) { //metodo para que vuelva a modo original luego de 5 seg
+    
+    //Metodo para que los items duren 5 segundos.
+	public void updateEfectos(float delta) { 
 	        if (temporizadorEfecto > 0) {
 	        	temporizadorEfecto -= delta; 
 	            if (temporizadorEfecto <= 0) {
