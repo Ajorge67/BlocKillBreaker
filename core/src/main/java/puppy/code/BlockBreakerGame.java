@@ -98,14 +98,11 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    }
 		}
 		
-		public void crearObstaculo() {
-			int pos_x = MathUtils.random(0, 800 - 5);
-			int pos_y = Gdx.graphics.getHeight();
-			int velocidad = 10;
+		public void crearObstaculo(int x, int y, int velocidad) {
 			int danio = 1; //aun no se ocupa
 			int alto = 30;
 		 	int ancho = 30;
-			Obstaculo obs = new Obstaculo(pos_x, pos_y, velocidad, danio, ancho, alto );
+			Obstaculo obs = new Obstaculo(x, y, velocidad, danio, ancho, alto );
 			obstaculos.add(obs);
 			ultimoObstaculo = TimeUtils.nanoTime(); //esto deja constancia de cuando fue el ultimo obstaculo creado
 		}
@@ -190,8 +187,12 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		    jugador.updateEfectos(delta);
 		    
 		    //esto es para crear los obstaculos, si se quiere que se creen más disminuir el numero.
-		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos)
-		        crearObstaculo();
+		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos) {
+		    	if(bloques.size() == 0)
+		    		crearObstaculo(jugador.getX(),Gdx.graphics.getHeight(), 10 + nivel);
+		    	else
+		    		crearObstaculo(MathUtils.random(0, 800 - 30), Gdx.graphics.getHeight(), 10);
+		    }
 		    
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
 		    	sonidoDisparo.play();
@@ -205,8 +206,10 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        }
 		        for(Block bloque : bloques)
 		            bala.checkCollisionSquare(bloque);
-		        for(Obstaculo obs : obstaculos)
-		            bala.checkCollisionSquare(obs);
+		        if(bloques.size() != 0) {
+		        	for(Obstaculo obs : obstaculos)
+		        		bala.checkCollisionSquare(obs);
+		        }
 		        if(bala.getColisiono() || bala.getY() > Gdx.graphics.getHeight())entidadesMuertas.add(bala);
 		        bala.draw(shape);
 		    }
