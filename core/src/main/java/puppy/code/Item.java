@@ -3,6 +3,12 @@ package puppy.code;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+/*	CLASE ABSTRACTA Item
+ * Clase base para el desarrollo de items en el juego. Representa
+ * de manera abstracta el esqueleto de un item. Implementa la interfaz
+ * ColisionableCuadrado para agregar la logica al chocar con el player, y
+ * Posicionable para ubicarlo en un lugar del plano.*/
+
 public abstract class Item implements ColisionableCuadrado, Posicionable{
 	private int x;
     private int y;

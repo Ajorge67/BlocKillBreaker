@@ -1,10 +1,14 @@
 package puppy.code;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
 import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
+
+/*	CLASE Block
+ * Esta clase representa los bloques que deben destruirse en el juego.
+ * Implementan la interfaz de CuadradoDestructible debido a que son
+ * entidades posicionables con x e y que pueden ser rotas por algun
+ * evento(El disparo del jugador en el contexto del juego).*/
 
 public class Block implements CuadradoDestructible{
     private int x , y , width , height;

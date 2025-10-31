@@ -5,6 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+/*	CLASE Player
+ * Representa al personaje del jugador. Implementa la interfaz de
+ * PosicionableCuadrado para poder moverlo y manejar sus dimensiones.*/
+
 public class Player  implements PosicionableCuadrado  {
     private int x;
     private int y;

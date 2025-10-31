@@ -15,8 +15,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+/*	CLASE BlocKillBreaker
+ * Clase principal de la logica del juego, viene a ser una especie de MAIN en
+ * el core del proyecto.*/
 
-public class BlockBreakerGame extends ApplicationAdapter {
+public class BlocKillBreaker extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Music musicaFondo;
 	private SpriteBatch batch; 
@@ -132,10 +135,10 @@ public class BlockBreakerGame extends ApplicationAdapter {
 			/*Condicion para generar obstaculos.*/
 		    if(TimeUtils.nanoTime() - ultimoObstaculo > spawnObstaculos) {
 		    	if(bloques.size() == 0) //Si no hay bloques los obstaculos se generan arriba del jugador
-		    		if(nivel < 8)
+		    		if(nivel < 5)
 		    			obstaculos.add(new Obstaculo(jugador.getX(),Gdx.graphics.getHeight(),30,30, 10 + nivel));
 		    		else
-		    			obstaculos.add(new Obstaculo(jugador.getX(),Gdx.graphics.getHeight(),30,30, 18));
+		    			obstaculos.add(new Obstaculo(jugador.getX(),Gdx.graphics.getHeight(),30,30, 15));
 		    	else //Si quedan bloques, se generan de manera aleatoria.
 		    		obstaculos.add(new Obstaculo(MathUtils.random(0, 800 - 30), Gdx.graphics.getHeight(),30,30, 10));
 		    	ultimoObstaculo = TimeUtils.nanoTime();
@@ -187,7 +190,7 @@ public class BlockBreakerGame extends ApplicationAdapter {
 		        obs.actualizar();
 		        obs.checkCollision(jugador);
 		        if(jugador.getEstado()) {
-		        	CajaAudio.reproducirSonido("PERDERVIDA", 0.3f);
+		        	if(jugador.getVida() != 1)CajaAudio.reproducirSonido("PERDERVIDA", 0.3f);
 		            jugador.setVida(jugador.getVida() - 1);
 		            jugador.setEstadoDestruido(false);
 		        }

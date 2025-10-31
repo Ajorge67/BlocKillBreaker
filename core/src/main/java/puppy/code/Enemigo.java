@@ -3,6 +3,12 @@ package puppy.code;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+/*	CLASE Enemigo
+ * Esta clase representa al enemigo que esta presente al final
+ * de cada nivel del juego. Implementa la interfaz CuadradoDestructible,
+ * pues permite establecer la animacion al dibujar al jefe de que esta
+ * recibiendo los ataques.*/
+
 public class Enemigo implements CuadradoDestructible {
 	private int x;
 	private int y;

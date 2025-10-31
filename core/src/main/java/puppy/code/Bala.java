@@ -1,8 +1,14 @@
 package puppy.code;
 
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+/*	CLASE Bala
+ * Esta clase representa las balas que dispara el jugador para atacar 
+ * a las distintas entidades presentes en el juego. Implementa las
+ * interfaces de ColisionableCuadrado y Posicionable. La primera
+ * por que puede tener colisiones con entidades de tipo PosicionableCuadrado,
+ * y la segunda por que es posicionable con un x e y.*/
 
 public class Bala implements ColisionableCuadrado, Posicionable{
 	    private int x;
@@ -41,12 +47,16 @@ public class Bala implements ColisionableCuadrado, Posicionable{
 	    	y += velocidad;
 	    }
 	    
+	    /*Metodo checkCollisionSquare: Encargado de recibir un CuadradoDestructible,
+	     para comprobar si hay colision con el, y en caso de haberlo, cambiarle
+	     su estado de destruido.*/
 	    public void checkCollisionSquare(CuadradoDestructible block) {
 	        if(collidesWithSquare(block)){
 	            colisiono = true;
 	            block.setEstadoDestruido(true);
 	        }
 	    }
+	    
 	    public boolean collidesWithSquare(PosicionableCuadrado bb) {
 
 	    	boolean intersectaX = (bb.getX() + bb.getWidth() >= x-size) && (bb.getX() <= x+size);

@@ -3,6 +3,12 @@ package puppy.code;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+/*	CLASE Obstaculo
+ * Esta clase representa a los obstaculos que caen en el juego. Implementa
+ * la interfaz de ColisionableCuadrado para agregar la logica de choque
+ * con el jugador, y CuadradoDestructible, debido a que es rompible por
+ * las balas.*/
+
 public class Obstaculo implements ColisionableCuadrado, CuadradoDestructible{
 	private int x;
 	private int y;
