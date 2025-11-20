@@ -10,7 +10,7 @@ public class Escudo extends Item {
 	
 	/*Bloque static para registrar este subtipo de item al cargar la clase.*/
 	static {
-		FabricaItems.registrarItem(4, new Escudo(0,0,0,0,0));
+		FabricaItems.getInstance().registrarItem(4, new Escudo(0,0,0,0,0));
 	}
 	
 	public Escudo(int x, int y,  int width, int height, int velocidad) {

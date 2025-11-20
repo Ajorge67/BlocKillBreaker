@@ -272,7 +272,7 @@ public class BlocKillBreaker extends ApplicationAdapter {
 		        if (b.getEstadoDestruido()) {
 		            puntaje++;
 		            if(generadorNum.nextInt(10) == 0)//Al romper un bloque hay probabilidad 1 de 11 de generar un item.
-		            	items.add(FabricaItems.generarItem(b.getX(), b.getY(), 45, 45, 10));
+		            	items.add(FabricaItems.getInstance().generarItem(b.getX(), b.getY(), 45, 45, 10));
 		            
 		            bloques.remove(b);
 		            i--; //Para no saltarse 1 tras eliminar del arraylist

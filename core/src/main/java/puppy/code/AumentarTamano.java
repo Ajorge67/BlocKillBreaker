@@ -10,7 +10,7 @@ public class AumentarTamano extends Item {
 	
 	/*Bloque static para registrar este subtipo de item al cargar la clase.*/
 	static {
-		FabricaItems.registrarItem(0, new AumentarTamano(0,0,0,0,0));
+		FabricaItems.getInstance().registrarItem(0, new AumentarTamano(0,0,0,0,0));
 	}
 	
 	public AumentarTamano(int x, int y,  int width, int height, int velocidad) {

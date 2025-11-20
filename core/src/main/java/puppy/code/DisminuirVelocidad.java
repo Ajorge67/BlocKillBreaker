@@ -10,7 +10,7 @@ public class DisminuirVelocidad extends Item {
 	
 	/*Bloque static para registrar este subtipo de item al cargar la clase.*/
 	static {
-		FabricaItems.registrarItem(3, new DisminuirVelocidad(0,0,0,0,0));
+		FabricaItems.getInstance().registrarItem(3, new DisminuirVelocidad(0,0,0,0,0));
 	}
 	
 	public DisminuirVelocidad(int x, int y, int width, int height, int velocidad) {
