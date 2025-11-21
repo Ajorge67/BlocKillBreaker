@@ -45,7 +45,7 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
     
     protected void reproducirSonido() {
     	//aqui debería ir pa que suene algo, pero no tenemos nada lol
-        //CajaAudio.reproducirSonido(a,b); 
+        CajaAudio.reproducirSonido("POWERUP",0.2f); 
     }
 
     protected void marcaParaEliminar() {

@@ -14,15 +14,17 @@ public class Bala implements ColisionableCuadrado, Posicionable{
 	    private int x;
 	    private int y;
 	    private int size;
-	    private int velocidad;
+	    private int velocidadX;
+	    private int velocidadY;
 	    private boolean colisiono;
 	    private Color color = Color.WHITE;
 	    
-	    public Bala(int x, int y, int size, int velocidad) {
+	    public Bala(int x, int y, int size, int velocidadX, int velocidadY) {
 	        this.x = x;
 	        this.y = y;
 	        this.size = size;
-	        this.velocidad = velocidad;
+	        this.velocidadX = velocidadX;
+	        this.velocidadY = velocidadY;
 	        colisiono = false;
 	    }
 	    
@@ -44,8 +46,10 @@ public class Bala implements ColisionableCuadrado, Posicionable{
 	    }
 	    
 	    public void actualizar() {
-	    	y += velocidad;
+	    	y += velocidadY;
+	    	x += velocidadX;
 	    }
+	    
 	    
 	    /*Metodo checkCollisionSquare: Encargado de recibir un CuadradoDestructible,
 	     para comprobar si hay colision con el, y en caso de haberlo, cambiarle

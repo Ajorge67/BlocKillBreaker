@@ -16,6 +16,7 @@ public class Player  implements PosicionableCuadrado  {
     private int height;
     private int velocidad;
     private int vida;
+    private EstrategiaDisparo modoDisparo;
     private boolean dañado = false;
     private boolean escudo = false;
     private int widthOriginal;
@@ -31,6 +32,7 @@ public class Player  implements PosicionableCuadrado  {
     	this.widthOriginal = ancho; 
     	this.velocidadOriginal = velocidad;
     	this.vida = vida;
+    	modoDisparo = new DisparoSimple();
     }
      
     public void setX(int x) {this.x = x;}
@@ -46,6 +48,8 @@ public class Player  implements PosicionableCuadrado  {
     public void setVelocidad(int v) { this.velocidad = v; }
     public int getVida() {return vida;}
     public void setVida(int vida) {this.vida = vida;}
+    public EstrategiaDisparo getEstrategiaDisparo() {return modoDisparo;}
+    public void setEstrategiaDisparo(EstrategiaDisparo modoDisparo) {this.modoDisparo = modoDisparo;}
     
     
 	public void setEstadoDestruido(boolean destroyed) {
@@ -82,8 +86,8 @@ public class Player  implements PosicionableCuadrado  {
 		if (copiaX > 0 && copiaX + width < widthVentana) x = copiaX;
 	}
 	
-    public Bala disparar() {
-    	return new Bala(x + width/2,y,5,10);
+    public Bala[] disparar() {
+    	return modoDisparo.disparar(x + width/2,y);
     }
     
     public void ganarEscudo() {
@@ -117,6 +121,7 @@ public class Player  implements PosicionableCuadrado  {
 	            if (temporizadorEfecto <= 0) {
 	                setWidth(widthOriginal);
 	                setVelocidad(velocidadOriginal);
+	                modoDisparo = new DisparoSimple();
 	            }
 	        }
         

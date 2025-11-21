@@ -72,6 +72,8 @@ public class BlocKillBreaker extends ApplicationAdapter {
 				Class.forName("puppy.code.DisminuirTamano",true, ClassLoader.getSystemClassLoader());
 				Class.forName("puppy.code.DisminuirVelocidad",true, ClassLoader.getSystemClassLoader());
 				Class.forName("puppy.code.Escudo",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.ItemDisparoTriple",true, ClassLoader.getSystemClassLoader());
+				Class.forName("puppy.code.ItemDisparoPerforante",true, ClassLoader.getSystemClassLoader());
 			}catch(Exception e) {
 				System.out.println(e.getMessage());
 			}
@@ -85,6 +87,7 @@ public class BlocKillBreaker extends ApplicationAdapter {
 			CajaAudio.cargarSonido("PERDERNIVEL", Gdx.audio.newSound(Gdx.files.internal("perderNivel.mp3")));
 			CajaAudio.cargarSonido("DANIOJEFE", Gdx.audio.newSound(Gdx.files.internal("danioBoss.mp3")));
 			CajaAudio.cargarSonido("PERDERVIDA", Gdx.audio.newSound(Gdx.files.internal("perderVida.mp3")));
+			CajaAudio.cargarSonido("POWERUP", Gdx.audio.newSound(Gdx.files.internal("powerUp.mp3")));
 		}
 		
 		/*Metodo crearBloques: Encargado de generar los bloques del nivel.*/
@@ -150,7 +153,9 @@ public class BlocKillBreaker extends ApplicationAdapter {
 		private void escucharDisparo() {
 		    if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
 		    	CajaAudio.reproducirSonido("DISPARO",1f);
-		    	balas.add(jugador.disparar());
+		    	for(Bala bala : jugador.disparar()) {
+		    		balas.add(bala);
+		    	}
 		    }
 		}
 		
