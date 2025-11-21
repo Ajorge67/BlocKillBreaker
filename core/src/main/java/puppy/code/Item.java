@@ -15,6 +15,7 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
     private int width;
     private int height;
     private int velocidad;
+    private boolean listoParaEliminar = false;
     
     //Constantes para la generacion de items.
     public static final int WIDTHFIJO= 45, HEIGHTFIJO = 45, VELFIJA = 8;
@@ -27,16 +28,38 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
         this.height = height;
         this.velocidad = velocidad;
     }
+    
+    /*método plantilla necesario para aplicar el template method. En este caso 
+     * define el flujo de acciones que realiza un objeto.
+     * actualizar->dibujar->verificar la colision->aplicar efecto
+     * */
+    public final void comportamientoItem(Player jugador, ShapeRenderer shape) {
+    	this.actualizar(); //paso 1: actualizar la ubicacion
+    	this.draw(shape);  //paso 2: dibujar el item
+    	if(this.collidesWithSquare(jugador)) { //paso 3: verificar colisión
+    		this.reproducirSonido();// paso opcional: reproducir un sonido
+        	this.aplicarEfecto(jugador); //paso opcional: aplicar el efecto del item
+        	this.marcaParaEliminar();  //paso opcional: indicar para que se elimine
+        }
+    }
+    
+    protected void reproducirSonido() {
+    	//aqui debería ir pa que suene algo, pero no tenemos nada lol
+        //CajaAudio.reproducirSonido(a,b); 
+    }
 
-   
-    public void actualizar() {
+    protected void marcaParaEliminar() {
+    	//metodo para rellenar el template noma
+        this.listoParaEliminar = true; 
+    }
+    
+    protected void actualizar() {
         y -= velocidad; // se mueve en -y
     }
     
-    public void draw(ShapeRenderer shape) {
+    protected void draw(ShapeRenderer shape) {
     	shape.setColor(Color.CYAN);
         shape.rect(x, y, width, height);
-    
     }
     
     public boolean collidesWithSquare(PosicionableCuadrado jugador) {
@@ -55,4 +78,5 @@ public abstract class Item implements ColisionableCuadrado, Posicionable{
     public int getHeight() {return height;}
     public void setWidth(int width) {this.width = width;}
     public void setHeight(int height) {this.height = height;}
+    public boolean listoParaEliminar() {return listoParaEliminar;}
 }

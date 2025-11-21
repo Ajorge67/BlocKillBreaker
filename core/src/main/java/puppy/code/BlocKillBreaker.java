@@ -200,22 +200,14 @@ public class BlocKillBreaker extends ApplicationAdapter {
 		    }
 		}
 		
-		/*Metodo para controlar los items en pantalla. Se actualiza su posicion
-	      y se dibujan, ademas de comprobar si hay colisiones con el jugador.*/
+		/*Metodo para controlar los items en pantalla.*/
 		private void procesarItems() {
 		    for (Item item : items) {
-		        item.actualizar(); // Mueve el item hacia abajo
-		        item.draw(shape);
-		        if (item.collidesWithSquare(jugador)) {
-		        	item.aplicarEfecto(jugador);
-		        	entidadesMuertas.add(item);
-		        }
-		        
-		        else if (item.getY() < 0)  // Si se salio por abajo
+		        item.comportamientoItem(jugador, shape);
+		        if (item.listoParaEliminar() || item.getY() < 0) { 
 		            entidadesMuertas.add(item);
-		        	
-		    };
-		    
+		        }
+		    }
 		}
 		
 		/*Metodo para eliminar todas las entidades que deben desaparecer
